@@ -30,15 +30,28 @@
       ${p.img ? `<img src="${p.img}" alt="" loading="lazy" />` : `<span class="cover-mark">${esc(p.short)}</span>`}
     </div>`;
 
-  const card = (p) => `
+  /* Kartu bergambar: gambar tampil penuh (nama & logo game sudah ada di desain gambarnya) */
+  const card = (p) => p.img ? `
+    <a class="game-card has-img" href="#/topup/${p.slug}" aria-label="${esc(p.name)}">
+      <img class="gc-img" src="${p.img}" alt="${esc(p.name)}" loading="lazy" />
+    </a>` : `
     <a class="game-card" href="#/topup/${p.slug}" style="--c1:${p.c1};--c2:${p.c2}">
       <span class="gc-badge"><b>OZIN SHOP</b><small>TOP UP GAME</small></span>
-      ${p.img ? `<img class="gc-img" src="${p.img}" alt="" loading="lazy" />` : `<span class="gc-mark">${esc(p.short)}</span>`}
+      <span class="gc-mark">${esc(p.short)}</span>
       <span class="gc-name">${esc(p.name)}</span>
       <span class="gc-foot">${esc(p.publisher)}</span>
     </a>`;
 
-  const hero = () => `
+  const hero = () => BANNERS.length ? `
+    <section class="hero" data-slider>
+      <div class="hero-track">
+        ${BANNERS.map((b) => {
+          const img = `<img src="${b.img}" alt="${esc(b.alt || STORE.name)}" />`;
+          return b.link ? `<a class="slide img-slide" href="${b.link}">${img}</a>` : `<div class="slide img-slide">${img}</div>`;
+        }).join("")}
+      </div>
+      <div class="hero-dots"></div>
+    </section>` : `
     <section class="hero" data-slider>
       <div class="hero-track">
         <div class="slide s1">
@@ -64,8 +77,8 @@
     const tiles = [
       { href: "#/topup/free-fire", p: bySlug("free-fire"), title: "Free Fire", sub: "Top Up Game" },
       { href: "#/topup/mobile-legends", p: bySlug("mobile-legends"), title: "Mobile Legends", sub: "Top Up Game" },
-      { href: "#/stok-akun", p: { short: "STOK", c1: "#7c3aed", c2: "#1a0b33" }, title: "Stok Akun", sub: "Beli akun game" },
-      { href: waLink("Halo admin Ozin Shop, saya mau jual akun game."), ext: true, p: { short: "JUAL", c1: "#c026d3", c2: "#2a0630" }, title: "Jual Akun", sub: "Hubungi admin jual akun via WhatsApp" },
+      { href: "#/stok-akun", p: { short: "STOK", c1: "#c22a35", c2: "#2a0709" }, title: "Stok Akun", sub: "Beli akun game" },
+      { href: waLink("Halo admin Ozin Shop, saya mau jual akun game."), ext: true, p: { short: "JUAL", c1: "#e0602b", c2: "#2a0d05" }, title: "Jual Akun", sub: "Hubungi admin jual akun via WhatsApp" },
     ];
     return `
       <section class="section">
@@ -384,6 +397,7 @@
     const parts = path.split("/").filter(Boolean);
     const nav = parts[0] === "stok-akun" || parts[0] === "cek-transaksi" ? parts[0] : !parts[0] || parts[0] === "topup" ? "home" : "";
     $$("[data-nav]").forEach((a) => a.classList.toggle("active", a.dataset.nav === nav));
+    document.body.dataset.page = parts[0] || "home";
     closeModal();
     stopSlider();
 

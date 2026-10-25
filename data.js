@@ -38,7 +38,16 @@ const FIELDS = {
 /* Buat daftar nominal: [jumlah, harga] → objek */
 const list = (unit, rows) => rows.map(([qty, price]) => ({ name: `${qty} ${unit}`, price }));
 
-/* c1, c2 = warna kartu; img = (opsional) path gambar cover, mis. "assets/games/ml.jpg" */
+/* Banner beranda. Kosong = pakai banner tulisan bawaan.
+   Ukuran gambar: 1920 × 620 px (rasio 3,1 : 1), JPG/WebP, idealnya < 300 KB.
+   Taruh file di assets/banners/, contoh:
+   { img: "assets/banners/welcome.jpg", alt: "Welcome to Ozin Shop", link: "#/topup/mobile-legends" } */
+const BANNERS = [];
+
+/* c1, c2 = warna kartu (dipakai kalau belum ada gambar).
+   img = (opsional) gambar kartu, mis. "assets/games/mobile-legends.jpg".
+   Ukuran gambar kartu: 600 × 900 px (rasio 2 : 3), JPG/WebP, idealnya < 150 KB.
+   Gambar tampil penuh, jadi masukkan logo/nama game & "OZIN SHOP" di desain gambarnya. */
 const PRODUCTS = [
   // ---------------- TOP UP GAME ----------------
   { slug: "mobile-legends", name: "Mobile Legends", short: "MLBB", cat: "topup", publisher: "Moonton", c1: "#1d4ed8", c2: "#0b1640", fields: "idzone", popular: true,
