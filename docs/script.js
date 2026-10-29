@@ -92,7 +92,7 @@
       { href: "#/topup/free-fire", p: bySlug("free-fire"), title: "Free Fire", sub: "Top Up Game" },
       { href: "#/topup/mobile-legends", p: bySlug("mobile-legends"), title: "Mobile Legends", sub: "Top Up Game" },
       { href: "#/topup/pubg-mobile", p: bySlug("pubg-mobile"), title: "PUBG Mobile", sub: "Top Up Game" },
-      { href: waLink("Halo admin Jean Shop, saya mau jual akun game."), ext: true, p: { short: "JUAL", c1: "#00b4d8", c2: "#04223a" }, title: "Jual Akun", sub: "Hubungi admin jual akun via WhatsApp" },
+      { href: "#/topup/genshin-impact", p: bySlug("genshin-impact"), title: "Genshin Impact", sub: "Top Up Game" },
     ];
     return `
       <section class="section">
