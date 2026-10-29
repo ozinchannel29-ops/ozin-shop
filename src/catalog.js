@@ -1,4 +1,4 @@
-// Pemetaan produk Ozin Shop (slug di docs/data.js) → layanan VIPayment.
+// Pemetaan produk Jean Shop (slug di docs/data.js) → layanan VIPayment.
 // game:  filter = nama game persis seperti di VIPayment (parameter filter_game), nick = kode cek nickname.
 // prepaid: brand = nama brand di VIPayment, type = pola nama tipe yang diambil (mis. hanya pulsa, bukan paket data).
 // ⚠ Nama/kode di bawah perlu dicocokkan sekali dengan data asli: jalankan `npm run vip:list` setelah API key diisi.

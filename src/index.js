@@ -1,4 +1,4 @@
-// Ozin Shop API (Cloudflare Worker). File situs di docs/ disajikan otomatis oleh Workers Assets;
+// Jean Shop API (Cloudflare Worker). File situs di docs/ disajikan otomatis oleh Workers Assets;
 // Worker ini hanya menangani /api/*.
 import { getProduct, FIELDS } from "./catalog.js";
 import { vipIsMock, vipSign, vipServices, vipOrder, vipStatus, vipNickname, mapVipStatus } from "./vip.js";
@@ -30,13 +30,13 @@ function sellPrice(env, cost) {
   return Math.ceil((cost + Math.max((cost * pct) / 100, min)) / step) * step;
 }
 
-/** No. invoice: OZN + tanggal WIB + 8 karakter acak, mis. OZN261030K7QX2M9A */
+/** No. invoice: JNS + tanggal WIB + 8 karakter acak, mis. JNS261030K7QX2M9A */
 function newInvoice() {
   const ALPH = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // 32 karakter, tanpa O/0/I/1
   const d = new Date(now() + 7 * 3600 * 1000);
   const ymd = [d.getUTCFullYear() % 100, d.getUTCMonth() + 1, d.getUTCDate()].map((n) => String(n).padStart(2, "0")).join("");
   const rnd = [...crypto.getRandomValues(new Uint8Array(8))].map((b) => ALPH[b % 32]).join("");
-  return `OZN${ymd}${rnd}`;
+  return `JNS${ymd}${rnd}`;
 }
 
 /* ---------------- database ---------------- */
@@ -222,13 +222,13 @@ async function handleMockPayPage(env, url) {
   if (!o) throw new HttpError(404, "Invoice tidak ditemukan");
   const html = `<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Simulasi Pembayaran</title><style>
-body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0a0a0a;color:#f5f2f2;font:15px system-ui,sans-serif;padding:16px}
-.box{width:100%;max-width:400px;background:#141012;border:1px solid #2c2124;border-radius:16px;padding:24px}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:#070b14;color:#f1f5fb;font:15px system-ui,sans-serif;padding:16px}
+.box{width:100%;max-width:400px;background:#0f1422;border:1px solid #222c42;border-radius:16px;padding:24px}
 .tag{display:inline-block;padding:4px 10px;border-radius:99px;background:#f59e0b22;color:#fbbf24;font-size:12px;font-weight:700}
-h1{font-size:20px;margin:14px 0 4px}p{color:#a8a0a1;margin:0 0 16px}
-dl{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;margin:0 0 20px}dt{color:#a8a0a1}dd{margin:0;text-align:right;font-weight:700}
-.tot{font-size:22px;color:#e04a55}button{width:100%;padding:13px;border:0;border-radius:10px;font:inherit;font-weight:800;cursor:pointer;margin-top:8px}
-.pay{background:linear-gradient(135deg,#e0444f,#8c1820);color:#fff}.cancel{background:#1c1517;color:#a8a0a1}
+h1{font-size:20px;margin:14px 0 4px}p{color:#9aa6bb;margin:0 0 16px}
+dl{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;margin:0 0 20px}dt{color:#9aa6bb}dd{margin:0;text-align:right;font-weight:700}
+.tot{font-size:22px;color:#4f9bff}button{width:100%;padding:13px;border:0;border-radius:10px;font:inherit;font-weight:800;cursor:pointer;margin-top:8px}
+.pay{background:linear-gradient(135deg,#4aa3ff,#0f3f9e);color:#fff}.cancel{background:#161d2e;color:#9aa6bb}
 </style></head><body><form class="box" method="post">
 <span class="tag">MODE SIMULASI – tidak ada uang sungguhan</span>
 <h1>Pembayaran ${escapeHtml(o.method_name)}</h1><p>Halaman ini menggantikan halaman bayar Tripay selama kunci Tripay belum diisi.</p>

@@ -1,4 +1,4 @@
-# Ozin Shop – Cloudflare Worker: menyajikan situs (folder docs/) + API /api/*
+# Jean Shop – Cloudflare Worker: menyajikan situs (folder docs/) + API /api/*
 name = "ozin-shop"
 main = "src/index.js"
 compatibility_date = "2026-09-01"

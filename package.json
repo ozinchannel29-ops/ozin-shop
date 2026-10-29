@@ -1,7 +1,7 @@
 {
   "name": "ozin-shop",
   "private": true,
-  "description": "Ozin Shop – top up game, pulsa & token PLN (Cloudflare Workers + D1)",
+  "description": "Jean Shop – top up game, pulsa & token PLN (Cloudflare Workers + D1)",
   "scripts": {
     "db:local": "wrangler d1 migrations apply ozin-shop --local",
     "dev": "npm run db:local && wrangler dev --port 3001",

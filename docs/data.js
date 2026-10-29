@@ -1,12 +1,12 @@
 /* =========================================================
-   OZIN SHOP — DATA TOKO
-   Edit file ini untuk mengubah nomor WA, produk, harga, dan stok akun.
+   JEAN SHOP — DATA TOKO
+   Edit file ini untuk mengubah nomor WA, produk, dan harga.
    Harga di bawah masih CONTOH, silakan ganti dengan harga jual Anda.
    ========================================================= */
 
 const STORE = {
-  name: "Ozin Shop",
-  domain: "ozinshop.com",
+  name: "Jean Shop",
+  domain: "",                     // isi setelah domain dibeli, mis. "jeanshop.com"
   wa: "6287868325296",            // nomor WhatsApp admin (format 62…)
   email: "ozinchannel29@gmail.com",
   tagline: "Tempat top up sat set, anti ribet & banyak promonya",
@@ -41,13 +41,13 @@ const list = (unit, rows) => rows.map(([qty, price]) => ({ name: `${qty} ${unit}
 /* Banner beranda. Kosong = pakai banner tulisan bawaan.
    Ukuran gambar: 1920 × 620 px (rasio 3,1 : 1), JPG/WebP, idealnya < 300 KB.
    Taruh file di assets/banners/, contoh:
-   { img: "assets/banners/welcome.jpg", alt: "Welcome to Ozin Shop", link: "#/topup/mobile-legends" } */
+   { img: "assets/banners/welcome.jpg", alt: "Welcome to Jean Shop", link: "#/topup/mobile-legends" } */
 const BANNERS = [];
 
 /* c1, c2 = warna kartu (dipakai kalau belum ada gambar).
    img = (opsional) gambar kartu, mis. "assets/games/mobile-legends.jpg".
    Ukuran gambar kartu: 600 × 900 px (rasio 2 : 3), JPG/WebP, idealnya < 150 KB.
-   Gambar tampil penuh, jadi masukkan logo/nama game & "OZIN SHOP" di desain gambarnya. */
+   Gambar tampil penuh, jadi masukkan logo/nama game & "JEAN SHOP" di desain gambarnya. */
 const PRODUCTS = [
   // ---------------- TOP UP GAME ----------------
   { slug: "mobile-legends", name: "Mobile Legends", short: "MLBB", cat: "topup", publisher: "Moonton", c1: "#1d4ed8", c2: "#0b1640", fields: "idzone", popular: true,
@@ -113,14 +113,6 @@ const PRODUCTS = [
     items: [20000, 50000, 100000, 200000, 500000, 1000000].map((n) => ({ name: `Token ${n.toLocaleString("id-ID")}`, price: n + 2000 })) },
 ];
 
-/* Stok akun yang dijual. Hapus contoh di bawah dan isi dengan stok asli.
-   Set sample: false untuk akun asli (label "CONTOH" akan hilang). */
-const ACCOUNTS = [
-  { id: "AKN-001", game: "Mobile Legends", title: "Akun Mythic Glory • 150+ Skin", price: 850000, details: ["Rank: Mythical Glory", "Hero: 120", "Skin: 158 (12 Collector)", "Login: Moonton"], sample: true },
-  { id: "AKN-002", game: "Free Fire", title: "Akun Sultan • Bundle Lengkap", price: 600000, details: ["Level: 72", "Bundle: 40+", "Senjata Evo: 6", "Login: Facebook"], sample: true },
-  { id: "AKN-003", game: "PUBG Mobile", title: "Akun Conqueror • Mythic Fashion", price: 1250000, details: ["Tier: Conqueror S20", "Mythic: 18", "Upgrade Gun: 4", "Login: Twitter + Email"], sample: true },
-];
-
 const PAYMENTS = [
   { id: "qris", name: "QRIS", note: "Semua e-wallet & m-banking", fee: 0.007 },
   { id: "dana", name: "DANA", note: "Bayar dengan saldo DANA", fee: 0.015 },
@@ -130,4 +122,4 @@ const PAYMENTS = [
 ];
 
 /* Dipakai juga oleh server (Cloudflare Worker); di browser baris ini diabaikan */
-if (typeof module !== "undefined") module.exports = { STORE, FIELDS, PRODUCTS, ACCOUNTS, PAYMENTS, BANNERS };
+if (typeof module !== "undefined") module.exports = { STORE, FIELDS, PRODUCTS, PAYMENTS, BANNERS };

@@ -1,4 +1,4 @@
-/* Ozin Shop — tampilan & alur pemesanan (tanpa backend: pesanan dikirim lewat WhatsApp) */
+/* Jean Shop — tampilan & alur pemesanan (tanpa backend: pesanan dikirim lewat WhatsApp) */
 (() => {
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -28,14 +28,14 @@
     return data;
   }
 
-  const TX_KEY = "ozinshop_tx";
+  const TX_KEY = "jeanshop_tx";
   const loadTx = () => { try { return JSON.parse(localStorage.getItem(TX_KEY)) || []; } catch { return []; } };
   const saveTx = (list) => { try { localStorage.setItem(TX_KEY, JSON.stringify(list.slice(0, 50))); } catch {} };
   const newInvoice = () => {
     const d = new Date();
     const ymd = [d.getFullYear() % 100, d.getMonth() + 1, d.getDate()].map((n) => String(n).padStart(2, "0")).join("");
     const rnd = Math.random().toString(36).slice(2, 6).toUpperCase();
-    return `OZN${ymd}${rnd}`;
+    return `JNS${ymd}${rnd}`;
   };
 
   /* ---------- komponen ---------- */
@@ -50,7 +50,7 @@
       <img class="gc-img" src="${p.img}" alt="${esc(p.name)}" loading="lazy" />
     </a>` : `
     <a class="game-card" href="#/topup/${p.slug}" style="--c1:${p.c1};--c2:${p.c2}">
-      <span class="gc-badge"><b>OZIN SHOP</b><small>TOP UP GAME</small></span>
+      <span class="gc-badge"><b>JEAN SHOP</b><small>TOP UP GAME</small></span>
       <span class="gc-mark">${esc(p.short)}</span>
       <span class="gc-name">${esc(p.name)}</span>
       <span class="gc-foot">${esc(p.publisher)}</span>
@@ -69,8 +69,8 @@
     <section class="hero" data-slider>
       <div class="hero-track">
         <div class="slide s1">
-          <span class="pill-logo">OZIN SHOP<small>TOP UP GAME</small></span>
-          <h1><span class="welcome">WELCOME TO</span><span class="big">OZIN SHOP</span></h1>
+          <span class="pill-logo">JEAN SHOP<small>TOP UP GAME</small></span>
+          <h1><span class="welcome">WELCOME TO</span><span class="big">JEAN SHOP</span></h1>
           <p class="ribbon">${esc(STORE.tagline)}</p>
         </div>
         <div class="slide s2">
@@ -91,8 +91,8 @@
     const tiles = [
       { href: "#/topup/free-fire", p: bySlug("free-fire"), title: "Free Fire", sub: "Top Up Game" },
       { href: "#/topup/mobile-legends", p: bySlug("mobile-legends"), title: "Mobile Legends", sub: "Top Up Game" },
-      { href: "#/stok-akun", p: { short: "STOK", c1: "#c22a35", c2: "#2a0709" }, title: "Stok Akun", sub: "Beli akun game" },
-      { href: waLink("Halo admin Ozin Shop, saya mau jual akun game."), ext: true, p: { short: "JUAL", c1: "#e0602b", c2: "#2a0d05" }, title: "Jual Akun", sub: "Hubungi admin jual akun via WhatsApp" },
+      { href: "#/topup/pubg-mobile", p: bySlug("pubg-mobile"), title: "PUBG Mobile", sub: "Top Up Game" },
+      { href: waLink("Halo admin Jean Shop, saya mau jual akun game."), ext: true, p: { short: "JUAL", c1: "#00b4d8", c2: "#04223a" }, title: "Jual Akun", sub: "Hubungi admin jual akun via WhatsApp" },
     ];
     return `
       <section class="section">
@@ -355,32 +355,6 @@
     });
   }
 
-  function pageAccounts() {
-    app.innerHTML = `
-      <section class="section page-head">
-        <h1 class="page-title">Stok Akun</h1>
-        <p class="sec-sub">Akun game siap pakai. Klik <b>Beli via WhatsApp</b> untuk menanyakan & membeli.</p>
-      </section>
-      ${ACCOUNTS.length ? `
-      <div class="acc-grid">
-        ${ACCOUNTS.map((a) => `
-          <article class="panel acc">
-            ${a.sample ? '<span class="tag-sample">CONTOH</span>' : ""}
-            <small class="acc-game">${esc(a.game)}</small>
-            <h3>${esc(a.title)}</h3>
-            <ul>${a.details.map((d) => `<li>${esc(d)}</li>`).join("")}</ul>
-            <div class="acc-foot">
-              <b>${rupiah(a.price)}</b>
-              <a class="btn-primary sm" target="_blank" rel="noopener" href="${waLink(`Halo admin ${STORE.name}, saya mau beli akun ${a.id} (${a.game} – ${a.title}). Masih tersedia?`)}">Beli via WhatsApp</a>
-            </div>
-          </article>`).join("")}
-      </div>` : `<div class="panel empty">Stok akun sedang kosong. Hubungi admin untuk info stok terbaru.</div>`}
-      <div class="panel cta-sell">
-        <div><h3>Mau jual akun game?</h3><p>Kirim detail akunmu ke admin, kami bantu jualkan dengan aman.</p></div>
-        <a class="btn-primary" target="_blank" rel="noopener" href="${waLink(`Halo admin ${STORE.name}, saya mau jual akun game.`)}">Jual Akun</a>
-      </div>`;
-  }
-
   function pageCheck(params) {
     const initial = params.get("inv") || "";
     app.innerHTML = `
@@ -389,7 +363,7 @@
         <p class="sec-sub">Masukkan nomor invoice untuk melihat detail pesananmu.</p>
       </section>
       <form class="panel check-form" id="checkForm">
-        <input name="inv" placeholder="Contoh: OZN261030K7QX2M9A" value="${esc(initial)}" autocomplete="off" />
+        <input name="inv" placeholder="Contoh: JNS261030K7QX2M9A" value="${esc(initial)}" autocomplete="off" />
         <button class="btn-primary" type="submit">Cari</button>
       </form>
       <div id="checkResult"></div>
@@ -476,11 +450,10 @@
       ["Kontak", `Pertanyaan seputar privasi dapat dikirim ke ${STORE.email}.`],
     ]],
     "syarat-ketentuan": ["Syarat & Ketentuan", [
-      ["Pemesanan", "Pembeli wajib memastikan data akun/nomor tujuan sudah benar. Kesalahan input oleh pembeli bukan tanggung jawab Ozin Shop."],
+      ["Pemesanan", "Pembeli wajib memastikan data akun/nomor tujuan sudah benar. Kesalahan input oleh pembeli bukan tanggung jawab Jean Shop."],
       ["Pembayaran", "Pesanan diproses setelah pembayaran terkonfirmasi. Nominal transfer harus sesuai dengan total yang tertera."],
       ["Proses", "Sebagian besar pesanan selesai dalam hitungan menit. Pada kondisi tertentu (gangguan server game/provider) proses dapat lebih lama."],
       ["Refund", "Refund hanya diberikan jika pesanan gagal diproses dari pihak kami, dikembalikan sesuai nominal yang dibayarkan."],
-      ["Jual beli akun", "Akun yang sudah diserahterimakan menjadi tanggung jawab pembeli. Segera ganti data login setelah menerima akun."],
     ]],
   };
 
@@ -500,7 +473,7 @@
     const [path, qs] = (location.hash.slice(1) || "/").split("?");
     const params = new URLSearchParams(qs || "");
     const parts = path.split("/").filter(Boolean);
-    const nav = parts[0] === "stok-akun" || parts[0] === "cek-transaksi" ? parts[0] : !parts[0] || parts[0] === "topup" ? "home" : "";
+    const nav = parts[0] === "cek-transaksi" ? parts[0] : !parts[0] || parts[0] === "topup" ? "home" : "";
     $$("[data-nav]").forEach((a) => a.classList.toggle("active", a.dataset.nav === nav));
     document.body.dataset.page = parts[0] || "home";
     closeModal();
@@ -509,13 +482,12 @@
 
     if (!parts.length) pageHome();
     else if (parts[0] === "topup" && parts[1]) pageProduct(parts[1]);
-    else if (parts[0] === "stok-akun") pageAccounts();
     else if (parts[0] === "cek-transaksi") pageCheck(params);
     else if (LEGAL[parts[0]]) pageLegal(parts[0]);
     else pageNotFound();
 
     const p = parts[0] === "topup" && bySlug(parts[1]);
-    document.title = p ? `Top Up ${p.name} Murah | Ozin Shop` : "Ozin Shop | Top Up Game, Pulsa & Token PLN Murah";
+    document.title = p ? `Top Up ${p.name} Murah | Jean Shop` : "Jean Shop | Top Up Game, Pulsa & Token PLN Murah";
     window.scrollTo({ top: 0 });
   }
 

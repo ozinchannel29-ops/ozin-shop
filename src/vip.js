@@ -7,7 +7,7 @@ const md5 = (s) => createHash("md5").update(s).digest("hex");
 export const vipIsMock = (env) => !(env.VIP_API_ID && env.VIP_API_KEY);
 export const vipSign = (env) => md5(env.VIP_API_ID + env.VIP_API_KEY);
 
-/** Status VIPayment → status pesanan Ozin Shop */
+/** Status VIPayment → status pesanan Jean Shop */
 export function mapVipStatus(s) {
   s = String(s || "").toLowerCase();
   if (s === "success") return "SUCCESS";
@@ -83,7 +83,7 @@ export async function vipStatus(env, order) {
 
 /** Cek nickname akun game → string */
 export async function vipNickname(env, product, target, zone) {
-  if (vipIsMock(env)) return `OzinPlayer${String(target).slice(-3)}`;
+  if (vipIsMock(env)) return `JeanPlayer${String(target).slice(-3)}`;
   const d = await call(env, "game-feature", { type: "get-nickname", code: product.vip.nick, target, ...(zone ? { additional_target: zone } : {}) });
   return typeof d === "string" ? d : d?.nickname || d?.name || "";
 }

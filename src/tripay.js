@@ -47,7 +47,7 @@ export async function payCreate(env, { order, channel, origin }) {
     method: channel.code,
     merchant_ref: order.inv,
     amount: order.price,
-    customer_name: "Pelanggan Ozin Shop",
+    customer_name: "Pelanggan Jean Shop",
     customer_email: env.CUSTOMER_EMAIL,
     customer_phone: order.wa,
     order_items: [{ sku: order.service, name: `${order.product} - ${order.item}`.slice(0, 250), price: order.price, quantity: 1 }],

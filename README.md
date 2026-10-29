@@ -1,4 +1,4 @@
-# Ozin Shop
+# Jean Shop
 
 Website top up game, pulsa & token PLN. Situs ada di `docs/`, server (API) di `src/` – berjalan di Cloudflare Workers + D1.
 
