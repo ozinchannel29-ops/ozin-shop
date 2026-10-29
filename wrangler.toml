@@ -1,0 +1,33 @@
+# Ozin Shop – Cloudflare Worker: menyajikan situs (folder docs/) + API /api/*
+name = "ozin-shop"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "./docs"
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ozin-shop"
+database_id = "00000000-0000-0000-0000-000000000000" # diganti saat deploy (wrangler d1 create ozin-shop)
+migrations_dir = "migrations"
+
+[vars]
+# Untung per produk: harga jual = modal + max(modal × MARGIN_PERCENT%, MARGIN_MIN), dibulatkan ke atas per ROUND_TO
+MARGIN_PERCENT = "5"
+MARGIN_MIN = "500"
+ROUND_TO = "100"
+# Level harga modal di VIPayment: basic | premium | special
+VIP_LEVEL = "basic"
+# sandbox | production
+TRIPAY_MODE = "sandbox"
+# Email pelanggan default untuk Tripay (wajib di API Tripay)
+CUSTOMER_EMAIL = "ozinchannel29@gmail.com"
+# IP server callback VIPayment (dari dokumentasi mereka)
+VIP_CALLBACK_IP = "178.248.73.218"
+
+# Rahasia TIDAK ditaruh di sini. Lokal: file .dev.vars | Online: wrangler secret put <NAMA>
+# VIP_API_ID, VIP_API_KEY, TRIPAY_API_KEY, TRIPAY_PRIVATE_KEY, TRIPAY_MERCHANT_CODE
+# Selama kunci kosong, server berjalan dalam MODE SIMULASI (tanpa transaksi sungguhan).

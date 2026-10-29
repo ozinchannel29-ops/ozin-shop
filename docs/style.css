@@ -230,7 +230,7 @@ a.ribbon:hover { color: #fde68a; }
 .summary span { display: block; font-size: 12px; color: #d9d1d2; }
 
 /* Logo pembayaran (teks) */
-.pay { display: inline-flex; align-items: center; justify-content: center; width: fit-content; min-width: 64px; height: 26px; padding: 0 10px; border-radius: 6px; background: #fff; font-weight: 800; font-size: 12px; letter-spacing: .3px; }
+.pay { display: inline-flex; align-items: center; justify-content: center; width: fit-content; max-width: 100%; min-width: 64px; height: 26px; padding: 0 10px; border-radius: 6px; background: #fff; color: #1f2937; font-weight: 800; font-size: 12px; letter-spacing: .3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pay.qris { color: #111; letter-spacing: 1.5px; }
 .pay.dana { color: #118eea; }
 .pay.ovo { color: #4c2a86; font-size: 14px; letter-spacing: 1px; }
@@ -258,6 +258,11 @@ a.ribbon:hover { color: #fde68a; }
 .tx { margin-top: 16px; }
 .tx-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
 .status { padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 800; color: #fbbf24; background: #f59e0b22; }
+.status.proc { color: #60a5fa; background: #3b82f622; }
+.status.ok { color: #4ade80; background: #22c55e22; }
+.status.bad { color: #f87171; background: #ef444422; }
+.tx-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn-primary.ghost { background: transparent; border: 1.5px solid var(--primary); color: var(--primary-2); box-shadow: none; }
 .kv { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; font-size: 13px; margin-bottom: 14px; }
 .kv dt { color: var(--muted); }
 .kv dd { text-align: right; font-weight: 700; word-break: break-word; }
@@ -308,6 +313,15 @@ a.ribbon:hover { color: #fde68a; }
 .success .inv { margin: 10px 0; padding: 12px; border-radius: 10px; background: #0f0c0d; border: 1px dashed var(--primary); font-size: 20px; font-weight: 800; letter-spacing: 1.5px; user-select: all; }
 .toast { position: fixed; left: 50%; bottom: 90px; z-index: 120; transform: translateX(-50%); max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 10px; background: #2e1c1e; border: 1px solid #7a3a40; font-weight: 700; font-size: 13px; box-shadow: 0 12px 30px #000a; }
 .toast[hidden] { display: none; }
+
+/* ---------- mode otomatis ---------- */
+.sim-bar { position: relative; z-index: 60; padding: 7px 16px; text-align: center; font-size: 11.5px; font-weight: 800; color: #1a1205; background: #fbbf24; }
+.nick { margin-top: 10px; font-size: 12.5px; font-weight: 700; }
+.nick.ok { color: #4ade80; }
+.nick.err { color: #f87171; }
+.item:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+.item:disabled span { color: var(--muted); }
+.pay-icon { height: 26px; width: auto; max-width: 90px; object-fit: contain; padding: 3px 6px; border-radius: 6px; background: #fff; }
 
 /* ---------- responsif ---------- */
 @media (max-width: 1100px) {

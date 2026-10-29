@@ -14,6 +14,20 @@
   ];
 
   /* ---------- penyimpanan transaksi di perangkat ---------- */
+  /* ---------- API server (null = mode WA manual, mis. di GitHub Pages) ---------- */
+  let API = null;
+  let pollTimer;
+  async function api(path, { method = "GET", body } = {}) {
+    const res = await fetch(path, {
+      method,
+      headers: body ? { "Content-Type": "application/json" } : {},
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw Object.assign(new Error(data.error || "Gagal terhubung ke server"), { status: res.status });
+    return data;
+  }
+
   const TX_KEY = "ozinshop_tx";
   const loadTx = () => { try { return JSON.parse(localStorage.getItem(TX_KEY)) || []; } catch { return []; } };
   const saveTx = (list) => { try { localStorage.setItem(TX_KEY, JSON.stringify(list.slice(0, 50))); } catch {} };
@@ -131,6 +145,12 @@
     if (!p) return pageNotFound();
     const fields = FIELDS[p.fields] || FIELDS.userid;
     const order = { item: null, pay: null };
+    const auto = !!API;
+    // Nominal & metode bayar: dari server (VIPayment + Tripay) atau dari data.js (mode WA manual)
+    let items = auto ? [] : p.items.map((it) => ({ ...it, available: true }));
+    const pays = auto ? API.payments : PAYMENTS.map((m) => ({ code: m.id, name: m.name, group: m.note, fee_flat: 0, fee_percent: m.fee * 100 }));
+    const feeOf = (m, price) => Math.ceil(m.fee_flat + (price * m.fee_percent) / 100);
+    const PAY_CLASS = { qris: "qris", dana: "dana", ovo: "ovo", shopeepay: "spay", gopay: "gopay" };
 
     app.innerHTML = `
       <nav class="crumbs"><a href="#/">Beranda</a> / <a href="#/" data-gocat="${p.cat}">${CATS.find((c) => c.id === p.cat).label}</a> / <span>${esc(p.name)}</span></nav>
@@ -168,27 +188,22 @@
                     : `<input name="${f.key}" type="${f.type === "number" ? "text" : f.type}" ${f.type === "number" ? 'inputmode="numeric" pattern="[0-9]*"' : ""} placeholder="${esc(f.placeholder)}" required />`}
                 </label>`).join("")}
             </div>
+            <p class="nick" id="nick" hidden></p>
             <p class="hint">Pastikan data yang dimasukkan sudah benar. Kesalahan input bukan tanggung jawab kami.</p>
           </div>
 
           <div class="panel step">
             <h3><span class="num">2</span> Pilih Nominal</h3>
-            <div class="items">
-              ${p.items.map((it, i) => `
-                <button type="button" class="item" data-item="${i}">
-                  <b>${esc(it.name)}</b>
-                  <span>${rupiah(it.price)}</span>
-                </button>`).join("")}
-            </div>
+            <div class="items" id="items"></div>
           </div>
 
           <div class="panel step">
             <h3><span class="num">3</span> Pilih Pembayaran</h3>
             <div class="pays">
-              ${PAYMENTS.map((m) => `
-                <button type="button" class="pay-opt" data-pay="${m.id}">
-                  <span class="pay ${m.id === "shopeepay" ? "spay" : m.id}">${esc(m.name)}</span>
-                  <small>${esc(m.note)}</small>
+              ${pays.map((m) => `
+                <button type="button" class="pay-opt" data-pay="${esc(m.code)}">
+                  ${m.icon ? `<img class="pay-icon" src="${esc(m.icon)}" alt="${esc(m.name)}" loading="lazy" />` : `<span class="pay ${PAY_CLASS[m.code.toLowerCase()] || ""}">${esc(m.name)}</span>`}
+                  <small>${esc(m.icon ? m.name : m.group || "")}</small>
                   <b class="pay-price">—</b>
                 </button>`).join("")}
             </div>
@@ -215,26 +230,63 @@
       </div>`;
 
     const form = $("#orderForm");
-    const total = () => (order.item ? order.item.price + Math.ceil(order.item.price * (order.pay ? order.pay.fee : 0)) : 0);
+    const total = () => (order.item ? order.item.price + (order.pay ? feeOf(order.pay, order.item.price) : 0) : 0);
     const refresh = () => {
       $$(".pay-opt").forEach((b) => {
-        const m = PAYMENTS.find((x) => x.id === b.dataset.pay);
-        $(".pay-price", b).textContent = order.item ? rupiah(order.item.price + Math.ceil(order.item.price * m.fee)) : "—";
+        const m = pays.find((x) => x.code === b.dataset.pay);
+        $(".pay-price", b).textContent = order.item ? rupiah(order.item.price + feeOf(m, order.item.price)) : "—";
       });
       $("#sumTotal").textContent = rupiah(total());
       $("#sumItem").textContent = order.item ? `${order.item.name}${order.pay ? " • " + order.pay.name : ""}` : "Belum memilih nominal";
     };
-    $$(".item").forEach((b) => b.addEventListener("click", () => {
-      order.item = p.items[+b.dataset.item];
+    const renderItems = () => {
+      $("#items").innerHTML = items.length
+        ? items.map((it, i) => `
+          <button type="button" class="item" data-item="${i}" ${it.available ? "" : "disabled"}>
+            <b>${esc(it.name)}</b>
+            <span>${it.available ? rupiah(it.price) : "Stok habis"}</span>
+          </button>`).join("")
+        : `<p class="hint">Nominal belum tersedia. Silakan hubungi admin.</p>`;
+    };
+    $("#items").addEventListener("click", (e) => {
+      const b = e.target.closest(".item");
+      if (!b || b.disabled) return;
+      order.item = items[+b.dataset.item];
       $$(".item").forEach((x) => x.classList.toggle("active", x === b));
       refresh();
-    }));
+    });
     $$(".pay-opt").forEach((b) => b.addEventListener("click", () => {
-      order.pay = PAYMENTS.find((x) => x.id === b.dataset.pay);
+      order.pay = pays.find((x) => x.code === b.dataset.pay);
       $$(".pay-opt").forEach((x) => x.classList.toggle("active", x === b));
       refresh();
     }));
     $$("[data-gocat]").forEach((a) => a.addEventListener("click", () => { state.cat = a.dataset.gocat; }));
+
+    if (auto) {
+      $("#items").innerHTML = `<p class="hint">Memuat nominal…</p>`;
+      api(`/api/products/${p.slug}`)
+        .then((r) => { items = r.items; renderItems(); })
+        .catch((e) => { $("#items").innerHTML = `<p class="hint">${esc(e.message)}</p>`; });
+
+      // Cek nickname otomatis setelah semua data akun terisi
+      let nickTimer;
+      const nick = $("#nick");
+      form.addEventListener("input", (e) => {
+        if (!fields.some((f) => f.key === e.target.name)) return;
+        clearTimeout(nickTimer);
+        nick.hidden = true;
+        const data = Object.fromEntries(new FormData(form));
+        if (fields.some((f) => !String(data[f.key] || "").trim())) return;
+        nickTimer = setTimeout(() => {
+          const qs = new URLSearchParams({ slug: p.slug, ...Object.fromEntries(fields.map((f) => [f.key, data[f.key].trim()])) });
+          api(`/api/nickname?${qs}`)
+            .then((r) => { nick.className = "nick ok"; nick.textContent = `✓ Nickname: ${r.nickname}`; nick.hidden = false; })
+            .catch((err) => { if (err.status === 400 && /tidak tersedia/.test(err.message)) return; nick.className = "nick err"; nick.textContent = err.message; nick.hidden = false; });
+        }, 700);
+      });
+    } else {
+      renderItems();
+    }
 
     form.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -257,10 +309,28 @@
           <dt>WhatsApp</dt><dd>${esc(wa)}</dd>
           <dt class="tot">Total</dt><dd class="tot">${rupiah(total())}</dd>
         </dl>
-        <p class="hint">Setelah klik tombol di bawah, kamu akan diarahkan ke WhatsApp admin untuk menerima instruksi pembayaran.</p>
-        <button class="btn-primary block" id="confirmBtn">Lanjut ke WhatsApp</button>`);
+        <p class="hint">${auto
+          ? "Kamu akan diarahkan ke halaman pembayaran. Setelah lunas, pesanan diproses otomatis."
+          : "Setelah klik tombol di bawah, kamu akan diarahkan ke WhatsApp admin untuk menerima instruksi pembayaran."}</p>
+        <button class="btn-primary block" id="confirmBtn">${auto ? "Lanjut ke Pembayaran" : "Lanjut ke WhatsApp"}</button>`);
 
-      $("#confirmBtn").addEventListener("click", () => {
+      $("#confirmBtn").addEventListener("click", async (ev) => {
+        if (auto) {
+          const btn = ev.currentTarget;
+          btn.disabled = true; btn.textContent = "Membuat tagihan…";
+          try {
+            const r = await api("/api/order", {
+              method: "POST",
+              body: { slug: p.slug, code: order.item.code, method: order.pay.code, wa, fields: Object.fromEntries(fields.map((f) => [f.key, String(data[f.key]).trim()])) },
+            });
+            saveTx([{ inv: r.inv, product: p.name, item: order.item.name, total: total(), date: new Date().toISOString(), auto: true }, ...loadTx()]);
+            location.href = r.pay_url;
+          } catch (err) {
+            toast(err.message);
+            btn.disabled = false; btn.textContent = "Lanjut ke Pembayaran";
+          }
+          return;
+        }
         const tx = {
           inv: newInvoice(), product: p.name, account, item: order.item.name, pay: order.pay.name,
           total: total(), wa, date: new Date().toISOString(), status: "Menunggu Pembayaran",
@@ -319,7 +389,7 @@
         <p class="sec-sub">Masukkan nomor invoice untuk melihat detail pesananmu.</p>
       </section>
       <form class="panel check-form" id="checkForm">
-        <input name="inv" placeholder="Contoh: OZN261024ABCD" value="${esc(initial)}" autocomplete="off" />
+        <input name="inv" placeholder="Contoh: OZN261030K7QX2M9A" value="${esc(initial)}" autocomplete="off" />
         <button class="btn-primary" type="submit">Cari</button>
       </form>
       <div id="checkResult"></div>
@@ -328,10 +398,45 @@
         <div id="history"></div>
       </section>`;
 
+    const askAdmin = (inv) => waLink(`Halo admin ${STORE.name}, saya mau cek status pesanan ${inv}.`);
+    const STATUS_CLASS = { UNPAID: "wait", PAID: "proc", PROCESSING: "proc", SUCCESS: "ok", FAILED: "bad", EXPIRED: "bad" };
+
+    // Mode otomatis: status diambil dari server dan diperbarui tiap 5 detik selama belum selesai
+    const showAuto = async (inv) => {
+      clearTimeout(pollTimer);
+      const box = $("#checkResult");
+      if (!box) return;
+      try {
+        const o = await api(`/api/status/${encodeURIComponent(inv)}`);
+        if (!$("#checkResult")) return;
+        box.innerHTML = `
+          <div class="panel tx">
+            <div class="tx-head"><b>${esc(o.inv)}</b><span class="status ${STATUS_CLASS[o.status] || ""}">${esc(o.status_label)}</span></div>
+            <dl class="kv">
+              <dt>Tanggal</dt><dd>${new Date(o.created_at).toLocaleString("id-ID")}</dd>
+              <dt>Produk</dt><dd>${esc(o.product)}</dd>
+              <dt>Tujuan</dt><dd>${esc(o.target)}${o.zone ? ` (${esc(o.zone)})` : ""}</dd>
+              <dt>Nominal</dt><dd>${esc(o.item)}</dd>
+              <dt>Pembayaran</dt><dd>${esc(o.method)}</dd>
+              ${o.note ? `<dt>Keterangan</dt><dd>${esc(o.note)}</dd>` : ""}
+              <dt class="tot">Total</dt><dd class="tot">${rupiah(o.amount)}</dd>
+            </dl>
+            <div class="tx-actions">
+              ${o.pay_url ? `<a class="btn-primary sm" href="${esc(o.pay_url)}">Bayar Sekarang</a>` : ""}
+              <a class="btn-primary sm ghost" target="_blank" rel="noopener" href="${askAdmin(o.inv)}">Hubungi admin</a>
+            </div>
+          </div>`;
+        if (["UNPAID", "PAID", "PROCESSING"].includes(o.status)) pollTimer = setTimeout(() => showAuto(inv), 5000);
+      } catch (err) {
+        box.innerHTML = `<div class="panel empty">${esc(err.message)}. <a target="_blank" rel="noopener" href="${askAdmin(inv)}">Tanyakan ke admin via WhatsApp</a>.</div>`;
+      }
+    };
+
     const show = (inv) => {
       inv = inv.trim().toUpperCase();
       const box = $("#checkResult");
       if (!inv) { box.innerHTML = ""; return; }
+      if (API) return showAuto(inv);
       const tx = loadTx().find((t) => t.inv === inv);
       box.innerHTML = tx ? `
         <div class="panel tx">
@@ -355,7 +460,7 @@
       ? `<div class="hist">${hist.map((t) => `
           <button class="panel hist-item" data-inv="${esc(t.inv)}">
             <span><b>${esc(t.inv)}</b><small>${esc(t.product)} • ${esc(t.item)}</small></span>
-            <span class="hist-right"><b>${rupiah(t.total)}</b><small>${esc(t.status)}</small></span>
+            <span class="hist-right"><b>${rupiah(t.total)}</b><small>${esc(t.status || "Lihat status")}</small></span>
           </button>`).join("")}</div>`
       : `<p class="sec-sub">Belum ada transaksi.</p>`;
     $$(".hist-item").forEach((b) => b.addEventListener("click", () => { $("#checkForm").inv.value = b.dataset.inv; show(b.dataset.inv); }));
@@ -400,6 +505,7 @@
     document.body.dataset.page = parts[0] || "home";
     closeModal();
     stopSlider();
+    clearTimeout(pollTimer);
 
     if (!parts.length) pageHome();
     else if (parts[0] === "topup" && parts[1]) pageProduct(parts[1]);
@@ -477,5 +583,16 @@
   $("#mailLink").href = `mailto:${STORE.email}`;
   $("#year").textContent = new Date().getFullYear();
   window.addEventListener("hashchange", route);
-  route();
+  // Cek apakah server API tersedia; kalau tidak (mis. GitHub Pages), situs tetap jalan dengan pemesanan via WA
+  const ctl = new AbortController();
+  setTimeout(() => ctl.abort(), 4000);
+  fetch("/api/config", { signal: ctl.signal })
+    .then((r) => (r.ok ? r.json() : null))
+    .then((c) => { if (c && c.auto) API = c; })
+    .catch(() => {})
+    .finally(() => {
+      if (API && (API.simulation.supplier || API.simulation.payment)) document.body.insertAdjacentHTML("afterbegin",
+        `<div class="sim-bar">MODE SIMULASI – ${API.simulation.supplier ? "supplier" : ""}${API.simulation.supplier && API.simulation.payment ? " & " : ""}${API.simulation.payment ? "pembayaran" : ""} belum tersambung, tidak ada transaksi sungguhan</div>`);
+      route();
+    });
 })();

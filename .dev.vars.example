@@ -1,0 +1,11 @@
+# Salin file ini menjadi ".dev.vars" (tanpa .example), lalu isi kuncinya.
+# File .dev.vars TIDAK ikut ke GitHub. Biarkan kosong = mode simulasi.
+
+# VIPayment → menu Dokumentasi API / Profil
+VIP_API_ID=
+VIP_API_KEY=
+
+# Tripay → Merchant → API & Integrasi (pakai kunci SANDBOX dulu untuk tes)
+TRIPAY_MERCHANT_CODE=
+TRIPAY_API_KEY=
+TRIPAY_PRIVATE_KEY=

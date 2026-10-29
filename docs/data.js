@@ -128,3 +128,6 @@ const PAYMENTS = [
   { id: "shopeepay", name: "ShopeePay", note: "Bayar dengan saldo ShopeePay", fee: 0.015 },
   { id: "gopay", name: "GoPay", note: "Bayar dengan saldo GoPay", fee: 0.015 },
 ];
+
+/* Dipakai juga oleh server (Cloudflare Worker); di browser baris ini diabaikan */
+if (typeof module !== "undefined") module.exports = { STORE, FIELDS, PRODUCTS, ACCOUNTS, PAYMENTS, BANNERS };
