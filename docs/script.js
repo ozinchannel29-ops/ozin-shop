@@ -500,6 +500,7 @@
     const dots = $(".hero-dots", el);
     let i = 0;
     dots.innerHTML = slides.map((_, n) => `<button aria-label="Banner ${n + 1}"></button>`).join("");
+    if (slides.length < 2) { dots.hidden = true; return; }
     const go = (n) => {
       i = (n + slides.length) % slides.length;
       track.style.transform = `translateX(-${i * 100}%)`;

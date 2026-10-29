@@ -100,9 +100,9 @@ main.container { flex: 1; padding-top: 16px; padding-bottom: 48px; position: rel
 .slide { position: relative; flex: 0 0 100%; aspect-ratio: 3.1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; overflow: hidden; }
 .slide::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, #ffffff0d 0 2px, transparent 2px 26px); }
 .slide::after { content: ""; position: absolute; inset: auto -10% -60% -10%; height: 90%; background: radial-gradient(closest-side, #ffffff40, transparent); }
-.slide.img-slide { padding: 0; aspect-ratio: 3.1 / 1; background: #08101f; }
+.slide.img-slide { padding: 0; aspect-ratio: auto; background: #08101f; }
 .img-slide::before, .img-slide::after { content: none; }
-.img-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.img-slide img { width: 100%; height: auto; display: block; }
 .slide > * { position: relative; z-index: 1; }
 .s1 { background: radial-gradient(circle at 15% 30%, #8abfff 0, transparent 35%), radial-gradient(circle at 85% 70%, #ffffff33 0, transparent 35%), linear-gradient(120deg, #0f3f9e, #2479f0 55%, #aacdff); }
 .s2 { background: radial-gradient(circle at 80% 20%, #fde68a88 0, transparent 35%), linear-gradient(120deg, #050d24, #0f3f9e 55%, #2479f0); }
@@ -119,6 +119,7 @@ main.container { flex: 1; padding-top: 16px; padding-bottom: 48px; position: rel
 .ribbon { display: inline-block; padding: 8px 26px; font-family: var(--display); font-size: clamp(11px, 1.6vw, 20px); letter-spacing: .5px; color: #fff; background: linear-gradient(90deg, transparent, #0a2a66 15%, #0f3f9e 50%, #0a2a66 85%, transparent); text-transform: uppercase; }
 a.ribbon:hover { color: #fde68a; }
 .hero-dots { position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; z-index: 2; }
+.hero-dots[hidden] { display: none; }
 .hero-dots button { width: 8px; height: 8px; border-radius: 99px; background: #ffffff66; transition: width .3s; }
 .hero-dots button.active { width: 24px; background: #fff; }
 

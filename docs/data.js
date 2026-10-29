@@ -42,7 +42,9 @@ const list = (unit, rows) => rows.map(([qty, price]) => ({ name: `${qty} ${unit}
    Ukuran gambar: 1920 × 620 px (rasio 3,1 : 1), JPG/WebP, idealnya < 300 KB.
    Taruh file di assets/banners/, contoh:
    { img: "assets/banners/welcome.jpg", alt: "Welcome to Jean Shop", link: "#/topup/mobile-legends" } */
-const BANNERS = [];
+const BANNERS = [
+  { img: "assets/banners/welcome.jpg", alt: "Welcome to Jean Shop – buka 25 jam" },
+];
 
 /* c1, c2 = warna kartu (dipakai kalau belum ada gambar).
    img = (opsional) gambar kartu, mis. "assets/games/mobile-legends.jpg".
