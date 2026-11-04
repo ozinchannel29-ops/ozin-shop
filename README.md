@@ -9,6 +9,8 @@ npm install
 npm run dev        # → http://localhost:3001
 ```
 
+Halaman admin: `http://localhost:3001/admin` (password dari `ADMIN_PASSWORD`; khusus mode simulasi tanpa kunci apa pun, password bawaan `admin`).
+
 Tanpa kunci API, server berjalan dalam **mode simulasi** (supplier & pembayaran tiruan, tidak ada uang sungguhan).
 
 ## Menyambungkan VIPayment & Tripay

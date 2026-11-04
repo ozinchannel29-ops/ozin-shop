@@ -373,7 +373,7 @@
       </section>`;
 
     const askAdmin = (inv) => waLink(`Halo admin ${STORE.name}, saya mau cek status pesanan ${inv}.`);
-    const STATUS_CLASS = { UNPAID: "wait", PAID: "proc", PROCESSING: "proc", SUCCESS: "ok", FAILED: "bad", EXPIRED: "bad" };
+    const STATUS_CLASS = { UNPAID: "wait", PAID: "proc", PROCESSING: "proc", SUCCESS: "ok", FAILED: "bad", EXPIRED: "bad", REFUNDED: "proc" };
 
     // Mode otomatis: status diambil dari server dan diperbarui tiap 5 detik selama belum selesai
     const showAuto = async (inv) => {

@@ -1,0 +1,68 @@
+/* Jean Shop — halaman admin (memakai token warna dari style.css) */
+.admin [hidden] { display: none !important; }
+.admin main.adm-main { padding-top: 20px; padding-bottom: 48px; }
+.adm-head-actions { margin-left: auto; display: flex; gap: 8px; }
+
+.adm-login { min-height: 60vh; display: grid; place-items: center; }
+.adm-login .panel { width: 100%; max-width: 380px; display: grid; gap: 12px; padding: 24px; }
+.adm-login h1 { font-size: 20px; }
+.adm-error { margin-top: 4px; color: #f87171; font-size: 13px; font-weight: 700; }
+.adm-warn { margin-bottom: 16px; padding: 10px 14px; border-radius: 10px; font-size: 12.5px; font-weight: 700; color: #1a1205; background: #fbbf24; }
+
+/* Ringkasan */
+.adm-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.stat { padding: 16px; }
+.stat small { display: block; font-size: 11px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); }
+.stat b { display: block; margin-top: 6px; font-size: 22px; font-variant-numeric: tabular-nums; }
+.stat span { display: block; margin-top: 4px; font-size: 12px; color: #d0d8e6; }
+.stat.profit b { color: #4ade80; }
+.stat.alert { cursor: pointer; border-color: #ef444466; background: linear-gradient(160deg, #3a1518, var(--panel) 70%); }
+.stat.alert b { color: #f87171; }
+.stat.alert.calm { cursor: default; border-color: var(--line); background: var(--panel); }
+.stat.alert.calm b { color: var(--text); }
+
+/* Filter */
+.adm-filters { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 12px; }
+.adm-tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.adm-tabs::-webkit-scrollbar { display: none; }
+.adm-tabs button { flex: none; padding: 7px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #d0d8e6; background: var(--panel-2); border: 1px solid var(--line); }
+.adm-tabs button.active { color: #fff; background: var(--grad); border-color: transparent; }
+.adm-tabs button .n { margin-left: 4px; padding: 0 6px; border-radius: 99px; font-size: 10.5px; background: #ef4444; color: #fff; }
+.adm-filters input { flex: 1; min-width: 220px; max-width: 360px; height: 38px; padding: 0 12px; border-radius: 10px; background: #0b101c; border: 1px solid var(--line); outline: none; }
+.adm-filters input:focus { border-color: var(--primary); }
+
+/* Daftar pesanan */
+.adm-list { margin-top: 12px; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--panel); }
+.adm-row { display: grid; grid-template-columns: 1.3fr 1.5fr 1.1fr 1fr 1fr 1.2fr; gap: 12px; align-items: center; padding: 12px 16px; border-top: 1px solid var(--line); font-size: 12.5px; }
+.adm-row:first-child { border-top: 0; }
+.adm-row.head { font-size: 10.5px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); background: var(--panel-2); }
+.adm-row.attn { background: linear-gradient(90deg, #ef44441a, transparent 60%); }
+.adm-row b { font-weight: 800; }
+.adm-row small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
+.adm-row .money { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.adm-row .plus { color: #4ade80; }
+.adm-row a.wa { color: var(--primary-2); text-decoration: underline; }
+.adm-row .note { grid-column: 1 / -1; margin-top: -4px; font-size: 11.5px; color: #d0d8e6; }
+.adm-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.adm-actions button { padding: 6px 10px; border-radius: 8px; font-size: 11.5px; font-weight: 800; color: #fff; background: var(--panel-2); border: 1px solid var(--line); }
+.adm-actions button.retry { background: var(--grad); border-color: transparent; }
+.adm-actions button.refund { border-color: #f8717188; color: #fca5a5; }
+.adm-actions button:disabled { opacity: .5; cursor: wait; }
+.adm-empty { padding: 32px 16px; text-align: center; color: var(--muted); }
+.status.ref { color: #c4b5fd; background: #8b5cf622; }
+
+.adm-pager { margin-top: 12px; display: flex; justify-content: center; align-items: center; gap: 12px; font-size: 12.5px; color: var(--muted); }
+.adm-pager button { padding: 7px 14px; border-radius: 8px; font-weight: 700; background: var(--panel-2); border: 1px solid var(--line); }
+.adm-pager button:disabled { opacity: .4; cursor: default; }
+
+@media (max-width: 900px) {
+  .adm-stats { grid-template-columns: 1fr 1fr; }
+  .adm-row.head { display: none; }
+  .adm-row { grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+  .adm-row > .c-status, .adm-row > .c-actions { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  .adm-head-actions .btn-primary { padding: 8px 12px; }
+  .stat b { font-size: 18px; }
+  .adm-filters input { max-width: none; min-width: 0; width: 100%; }
+}

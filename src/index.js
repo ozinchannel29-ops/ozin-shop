@@ -3,6 +3,7 @@
 import { getProduct, FIELDS } from "./catalog.js";
 import { vipIsMock, vipSign, vipServices, vipOrder, vipStatus, vipNickname, mapVipStatus } from "./vip.js";
 import { payIsMock, payChannels, payCreate, payVerify, feeOf } from "./tripay.js";
+import { handleAdmin } from "./admin.js";
 
 const STATUS_LABEL = {
   UNPAID: "Menunggu Pembayaran",
@@ -11,6 +12,7 @@ const STATUS_LABEL = {
   SUCCESS: "Berhasil",
   FAILED: "Gagal",
   EXPIRED: "Kedaluwarsa",
+  REFUNDED: "Dana Dikembalikan",
 };
 
 class HttpError extends Error {
@@ -42,7 +44,7 @@ function newInvoice() {
 /* ---------------- database ---------------- */
 const getOrder = (env, inv) => env.DB.prepare("SELECT * FROM orders WHERE inv = ?").bind(inv).first();
 
-const UPDATABLE = ["status", "amount", "pay_ref", "pay_url", "pay_expired", "vip_trxid", "note", "checked_at"];
+const UPDATABLE = ["status", "amount", "pay_ref", "pay_url", "pay_expired", "vip_trxid", "note", "checked_at", "paid_at"];
 async function updateOrder(env, inv, fields, onlyIfStatus) {
   const keys = Object.keys(fields).filter((k) => UPDATABLE.includes(k));
   let sql = `UPDATE orders SET ${keys.map((k) => `${k} = ?`).join(", ")}, updated_at = ? WHERE inv = ?`;
@@ -94,7 +96,7 @@ async function fulfil(env, inv) {
 
 /** Pembayaran lunas → kunci status (sekali saja) lalu kirim ke VIPayment */
 async function markPaid(env, inv) {
-  if (await updateOrder(env, inv, { status: "PAID" }, "UNPAID")) await fulfil(env, inv);
+  if (await updateOrder(env, inv, { status: "PAID", paid_at: now() }, "UNPAID")) await fulfil(env, inv);
 }
 
 /* ---------------- handler ---------------- */
@@ -267,6 +269,7 @@ export default {
       else if (m === "POST" && pathname === "/api/callback/tripay") r = await handleTripayCallback(env, request);
       else if (m === "POST" && pathname === "/api/callback/vip") r = await handleVipCallback(env, request);
       else if (pathname === "/api/mock/pay" && payIsMock(env)) r = m === "POST" ? await handleMockPay(env, request, origin) : await handleMockPayPage(env, url);
+      else if (pathname.startsWith("/api/admin/")) r = await handleAdmin(env, request, url, { getOrder, updateOrder, fulfil, STATUS_LABEL, HttpError, json });
       else throw new HttpError(404, "Not found");
       return r;
     } catch (e) {

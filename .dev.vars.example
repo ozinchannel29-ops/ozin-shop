@@ -1,6 +1,9 @@
 # Salin file ini menjadi ".dev.vars" (tanpa .example), lalu isi kuncinya.
 # File .dev.vars TIDAK ikut ke GitHub. Biarkan kosong = mode simulasi.
 
+# Password halaman admin (/admin). Wajib diisi kalau kunci VIPayment/Tripay sudah diisi.
+ADMIN_PASSWORD=
+
 # VIPayment → menu Dokumentasi API / Profil
 VIP_API_ID=
 VIP_API_KEY=
