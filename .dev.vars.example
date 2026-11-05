@@ -1,10 +1,20 @@
-# Salin file ini menjadi ".dev.vars" (tanpa .example), lalu isi kuncinya.
-# File .dev.vars TIDAK ikut ke GitHub. Biarkan kosong = mode simulasi.
+# Salin file ini menjadi ".dev.vars" (di komputer) atau ".env" (di VPS), lalu isi kuncinya.
+# File itu TIDAK ikut ke GitHub. Kunci yang dikosongkan = bagian itu berjalan dalam mode simulasi.
 
-# Password halaman admin (/admin). Wajib diisi kalau kunci VIPayment/Tripay sudah diisi.
+# Password halaman admin (/admin). Wajib diisi begitu ada kunci asli di bawah.
 ADMIN_PASSWORD=
 
-# VIPayment → menu Dokumentasi API / Profil
+# Supplier yang dipakai: digiflazz | vipayment
+SUPPLIER=digiflazz
+
+# Digiflazz → Atur Koneksi → API (username, API key, whitelist IP server, webhook)
+# development = pakai Development Key (transaksi uji), production = pakai Production Key
+DIGIFLAZZ_MODE=development
+DIGIFLAZZ_USERNAME=
+DIGIFLAZZ_API_KEY=
+DIGIFLAZZ_WEBHOOK_SECRET=
+
+# VIPayment (cadangan, dipakai bila SUPPLIER=vipayment)
 VIP_API_ID=
 VIP_API_KEY=
 

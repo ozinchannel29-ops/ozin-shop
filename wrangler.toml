@@ -1,4 +1,4 @@
-# Jean Shop – Cloudflare Worker: menyajikan situs (folder docs/) + API /api/*
+# Jean Shop – konfigurasi Cloudflare Worker (opsional; untuk Digiflazz pakai VPS: server/node.mjs)
 name = "ozin-shop"
 main = "src/index.js"
 compatibility_date = "2026-09-01"
@@ -28,6 +28,7 @@ CUSTOMER_EMAIL = "ozinchannel29@gmail.com"
 # IP server callback VIPayment (dari dokumentasi mereka)
 VIP_CALLBACK_IP = "178.248.73.218"
 
-# Rahasia TIDAK ditaruh di sini. Lokal: file .dev.vars | Online: wrangler secret put <NAMA>
-# VIP_API_ID, VIP_API_KEY, TRIPAY_API_KEY, TRIPAY_PRIVATE_KEY, TRIPAY_MERCHANT_CODE
+# Rahasia & pilihan supplier TIDAK ditaruh di sini: lihat .dev.vars.example
+# (komputer: .dev.vars | VPS: .env | Cloudflare: wrangler secret put <NAMA>).
 # Selama kunci kosong, server berjalan dalam MODE SIMULASI (tanpa transaksi sungguhan).
+# Pengaturan [vars] di bawah juga dibaca oleh server VPS (server/node.mjs).

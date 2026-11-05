@@ -66,6 +66,7 @@
 
   function renderStats(s) {
     state.attention = s.attention.count;
+    state.supplier = s.supplier;
     const sim = s.simulation.supplier || s.simulation.payment;
     const warn = $("#warnBar");
     const msgs = [];
@@ -173,7 +174,7 @@
   });
 
   const CONFIRM = {
-    retry: "Kirim ulang pesanan ini ke VIPayment? Saldo VIPayment akan terpakai lagi.",
+    get retry() { return `Kirim ulang pesanan ini ke ${state.supplier || "supplier"}? Saldo ${state.supplier || "supplier"} akan terpakai lagi.`; },
     refunded: "Tandai sudah direfund? Pastikan dana sudah benar-benar dikembalikan ke pembeli.",
     success: "Tandai pesanan ini berhasil? Pakai ini kalau sudah diproses manual.",
   };

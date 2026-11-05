@@ -2,7 +2,7 @@
 // Password: secret ADMIN_PASSWORD. Khusus mode simulasi penuh (tanpa kunci apa pun) password bawaan = "admin".
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { Buffer } from "node:buffer";
-import { vipIsMock } from "./vip.js";
+import { getSupplier, SUPPLIERS } from "./supplier.js";
 import { payIsMock } from "./tripay.js";
 
 const DAY = 24 * 3600 * 1000;
@@ -11,7 +11,8 @@ const PAGE_SIZE = 50;
 
 function adminPassword(env) {
   if (env.ADMIN_PASSWORD) return env.ADMIN_PASSWORD;
-  return vipIsMock(env) && payIsMock(env) ? "admin" : "";
+  // Password bawaan hanya kalau BELUM ada kunci supplier/pembayaran apa pun
+  return Object.values(SUPPLIERS).every((s) => s.isMock(env)) && payIsMock(env) ? "admin" : "";
 }
 
 const sign = (secret, exp) => createHmac("sha256", secret).update(`admin:${exp}`).digest("hex");
@@ -73,7 +74,8 @@ export async function handleAdmin(env, request, url, { getOrder, updateOrder, fu
       today: await summary(env, startOfTodayWIB(t)),
       month: await summary(env, t - 30 * DAY),
       attention: { count: attention.n || 0, amount: attention.total || 0 },
-      simulation: { supplier: vipIsMock(env), payment: payIsMock(env) },
+      simulation: { supplier: getSupplier(env).isMock(env), payment: payIsMock(env) },
+      supplier: getSupplier(env).name,
       default_password: !env.ADMIN_PASSWORD,
     });
   }

@@ -1,7 +1,7 @@
-// Jean Shop API (Cloudflare Worker). File situs di docs/ disajikan otomatis oleh Workers Assets;
-// Worker ini hanya menangani /api/*.
+// Jean Shop API. Berjalan di VPS (server/node.mjs) atau Cloudflare Worker; file situs di docs/,
+// handler ini menangani /api/*.
 import { getProduct, FIELDS } from "./catalog.js";
-import { vipIsMock, vipSign, vipServices, vipOrder, vipStatus, vipNickname, mapVipStatus } from "./vip.js";
+import { getSupplier, SUPPLIERS } from "./supplier.js";
 import { payIsMock, payChannels, payCreate, payVerify, feeOf } from "./tripay.js";
 import { handleAdmin } from "./admin.js";
 
@@ -84,17 +84,28 @@ function readFields(product, input) {
 }
 
 /* ---------------- proses ke supplier ---------------- */
+const failNote = (msg) => `Gagal diproses: ${msg || "ditolak supplier"}. Dana akan dikembalikan, silakan hubungi admin.`;
+
 async function fulfil(env, inv) {
   const order = await getOrder(env, inv);
   try {
-    const r = await vipOrder(env, order);
-    await updateOrder(env, inv, { status: mapVipStatus(r.status), vip_trxid: r.trxid, note: r.note || "", checked_at: now() });
+    const r = await getSupplier(env).order(env, order);
+    await updateOrder(env, inv, { status: r.status, vip_trxid: r.trxid, note: r.status === "FAILED" ? failNote(r.note) : r.note || "", checked_at: now() });
   } catch (e) {
-    await updateOrder(env, inv, { status: "FAILED", note: `Gagal diproses: ${e.message}. Dana akan dikembalikan, silakan hubungi admin.` });
+    await updateOrder(env, inv, { status: "FAILED", note: failNote(e.message) });
   }
 }
 
-/** Pembayaran lunas → kunci status (sekali saja) lalu kirim ke VIPayment */
+/** Callback supplier yang sudah diverifikasi → perbarui pesanan yang masih diproses */
+async function applySupplierUpdate(env, upd) {
+  if (!upd?.trxid) return;
+  const order = await env.DB.prepare("SELECT * FROM orders WHERE vip_trxid = ?").bind(upd.trxid).first();
+  if (order && order.status === "PROCESSING" && upd.status !== "PROCESSING") {
+    await updateOrder(env, order.inv, { status: upd.status, note: upd.status === "FAILED" ? failNote(upd.note) : upd.note || order.note, checked_at: now() }, "PROCESSING");
+  }
+}
+
+/** Pembayaran lunas → kunci status (sekali saja) lalu kirim ke supplier */
 async function markPaid(env, inv) {
   if (await updateOrder(env, inv, { status: "PAID", paid_at: now() }, "UNPAID")) await fulfil(env, inv);
 }
@@ -104,7 +115,7 @@ async function handleConfig(env) {
   const channels = await payChannels(env);
   return json({
     auto: true,
-    simulation: { supplier: vipIsMock(env), payment: payIsMock(env) },
+    simulation: { supplier: getSupplier(env).isMock(env), payment: payIsMock(env) },
     payments: channels.map(({ code, name, group, icon, fee_flat, fee_percent, min, max }) => ({ code, name, group, icon, fee_flat, fee_percent, min, max })),
   });
 }
@@ -112,15 +123,16 @@ async function handleConfig(env) {
 async function handleProducts(env, slug) {
   const product = getProduct(slug);
   if (!product) throw new HttpError(404, "Produk tidak ditemukan");
-  const list = await vipServices(env, product);
+  const list = await getSupplier(env).services(env, product);
   return json({ items: list.map((s) => ({ code: s.code, name: s.name, price: sellPrice(env, s.cost), available: s.available })) });
 }
 
 async function handleNickname(env, url) {
   const product = getProduct(url.searchParams.get("slug"));
-  if (!product || product.kind !== "game" || (!product.vip.nick && !vipIsMock(env))) throw new HttpError(400, "Cek nickname tidak tersedia untuk produk ini");
+  const sup = getSupplier(env);
+  if (!product || !sup.canNickname(env, product)) throw new HttpError(400, "Cek nickname tidak tersedia untuk produk ini");
   const { target, zone } = readFields(product, Object.fromEntries(url.searchParams));
-  const nickname = await vipNickname(env, product, target, zone);
+  const nickname = await sup.nickname(env, product, target, zone);
   if (!nickname) throw new HttpError(404, "Akun tidak ditemukan, periksa kembali ID kamu");
   return json({ nickname });
 }
@@ -133,7 +145,7 @@ async function handleCreateOrder(env, request, origin) {
   const wa = String(body.wa || "").replace(/\D/g, "");
   if (!/^\d{10,15}$/.test(wa)) throw new HttpError(400, "Nomor WhatsApp belum valid");
 
-  const svc = (await vipServices(env, product)).find((s) => s.code === body.code);
+  const svc = (await getSupplier(env).services(env, product)).find((s) => s.code === body.code);
   if (!svc) throw new HttpError(400, "Pilih nominal terlebih dahulu");
   if (!svc.available) throw new HttpError(400, "Nominal ini sedang kosong, pilih yang lain");
   const channel = (await payChannels(env)).find((c) => c.code === body.method);
@@ -167,13 +179,13 @@ async function handleCreateOrder(env, request, origin) {
 async function handleStatus(env, inv) {
   let order = await getOrder(env, inv);
   if (!order) throw new HttpError(404, "Invoice tidak ditemukan");
-  // Masih diproses supplier → cek ulang paling sering tiap 15 detik (simulasi: setiap kali)
-  if (order.status === "PROCESSING" && order.vip_trxid && (vipIsMock(env) || now() - order.checked_at > 15000)) {
+  // Masih diproses supplier → cek ulang dengan jeda aman per supplier (simulasi: setiap kali)
+  const sup = getSupplier(env);
+  if (order.status === "PROCESSING" && order.vip_trxid && (sup.isMock(env) || now() - order.checked_at > sup.pollMs)) {
     try {
-      const r = await vipStatus(env, order);
-      const st = mapVipStatus(r.status);
-      if (st !== order.status) await updateOrder(env, inv, { status: st, note: r.note || order.note, checked_at: now() }, "PROCESSING");
-      else await updateOrder(env, inv, { checked_at: now() });
+      await updateOrder(env, inv, { checked_at: now() }); // kunci dulu supaya permintaan paralel tidak ikut mengecek
+      const r = await sup.status(env, order);
+      if (r.status !== "PROCESSING") await updateOrder(env, inv, { status: r.status, note: r.status === "FAILED" ? failNote(r.note) : r.note || order.note }, "PROCESSING");
       order = await getOrder(env, inv);
     } catch { /* coba lagi di permintaan berikutnya */ }
   }
@@ -201,17 +213,12 @@ async function handleTripayCallback(env, request) {
   return json({ success: true });
 }
 
-async function handleVipCallback(env, request) {
-  if (vipIsMock(env)) throw new HttpError(404, "Not found");
-  const ip = request.headers.get("CF-Connecting-IP");
-  if (env.VIP_CALLBACK_IP && ip && ip !== env.VIP_CALLBACK_IP) return json({ result: false }, 403);
-  if (request.headers.get("X-Client-Signature") !== vipSign(env)) return json({ result: false }, 403);
-  const body = await request.json().catch(() => ({}));
-  const d = body.data || body;
-  const order = await env.DB.prepare("SELECT * FROM orders WHERE vip_trxid = ?").bind(String(d.trxid || "")).first();
-  if (order && order.status === "PROCESSING") {
-    await updateOrder(env, order.inv, { status: mapVipStatus(d.status), note: d.note || order.note, checked_at: now() }, "PROCESSING");
-  }
+/** Callback/webhook supplier: /api/callback/digiflazz atau /api/callback/vip */
+async function handleSupplierCallback(env, request, name) {
+  const sup = SUPPLIERS[name];
+  const upd = sup && (await sup.callback(env, request).catch(() => null));
+  if (!upd) return json({ result: false }, 403);
+  await applySupplierUpdate(env, upd);
   return json({ result: true });
 }
 
@@ -267,7 +274,8 @@ export default {
       else if (m === "POST" && pathname === "/api/order") r = await handleCreateOrder(env, request, origin);
       else if (m === "GET" && pathname.startsWith("/api/status/")) r = await handleStatus(env, decodeURIComponent(pathname.slice(12)).toUpperCase());
       else if (m === "POST" && pathname === "/api/callback/tripay") r = await handleTripayCallback(env, request);
-      else if (m === "POST" && pathname === "/api/callback/vip") r = await handleVipCallback(env, request);
+      else if (m === "POST" && pathname === "/api/callback/digiflazz") r = await handleSupplierCallback(env, request, "digiflazz");
+      else if (m === "POST" && pathname === "/api/callback/vip") r = await handleSupplierCallback(env, request, "vipayment");
       else if (pathname === "/api/mock/pay" && payIsMock(env)) r = m === "POST" ? await handleMockPay(env, request, origin) : await handleMockPayPage(env, url);
       else if (pathname.startsWith("/api/admin/")) r = await handleAdmin(env, request, url, { getOrder, updateOrder, fulfil, STATUS_LABEL, HttpError, json });
       else throw new HttpError(404, "Not found");

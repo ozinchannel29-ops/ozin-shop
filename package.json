@@ -1,12 +1,18 @@
 {
   "name": "ozin-shop",
   "private": true,
-  "description": "Jean Shop – top up game, pulsa & token PLN (Cloudflare Workers + D1)",
+  "type": "module",
+  "description": "Jean Shop – top up game, pulsa & token PLN (VPS Node + SQLite, atau Cloudflare Workers + D1)",
+  "engines": {
+    "node": ">=22.13"
+  },
   "scripts": {
-    "db:local": "wrangler d1 migrations apply ozin-shop --local",
-    "dev": "npm run db:local && wrangler dev --port 3001",
+    "dev": "node server/node.mjs",
+    "start": "node server/node.mjs",
+    "df:list": "node scripts/df-list.mjs",
     "vip:list": "node scripts/vip-list.mjs",
-    "deploy": "wrangler d1 migrations apply ozin-shop --remote && wrangler deploy"
+    "dev:worker": "wrangler d1 migrations apply ozin-shop --local && wrangler dev --port 3001",
+    "deploy:worker": "wrangler d1 migrations apply ozin-shop --remote && wrangler deploy"
   },
   "devDependencies": {
     "wrangler": "^4.0.0"
