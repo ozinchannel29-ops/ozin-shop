@@ -146,7 +146,7 @@
     const fields = FIELDS[p.fields] || FIELDS.userid;
     const order = { item: null, pay: null };
     const auto = !!API;
-    // Nominal & metode bayar: dari server (supplier + Tripay) atau dari data.js (mode WA manual)
+    // Nominal & metode bayar: dari server (supplier + payment gateway) atau dari data.js (mode WA manual)
     let items = auto ? [] : p.items.map((it) => ({ ...it, available: true }));
     const pays = auto ? API.payments : PAYMENTS.map((m) => ({ code: m.id, name: m.name, group: m.note, fee_flat: 0, fee_percent: m.fee * 100 }));
     const feeOf = (m, price) => Math.ceil(m.fee_flat + (price * m.fee_percent) / 100);
@@ -202,7 +202,7 @@
             <div class="pays">
               ${pays.map((m) => `
                 <button type="button" class="pay-opt" data-pay="${esc(m.code)}">
-                  ${m.icon ? `<img class="pay-icon" src="${esc(m.icon)}" alt="${esc(m.name)}" loading="lazy" />` : `<span class="pay ${PAY_CLASS[m.code.toLowerCase()] || ""}">${esc(m.name)}</span>`}
+                  ${m.icon ? `<img class="pay-icon" src="${esc(m.icon)}" alt="${esc(m.name)}" loading="lazy" />` : `<span class="pay ${PAY_CLASS[m.code.toLowerCase()] || PAY_CLASS[m.name.toLowerCase()] || ""}">${esc(m.name)}</span>`}
                   <small>${esc(m.icon ? m.name : m.group || "")}</small>
                   <b class="pay-price">—</b>
                 </button>`).join("")}

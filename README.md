@@ -1,7 +1,7 @@
 # Jean Shop
 
 Website top up game, pulsa & token PLN. Situs ada di `docs/`, server (API) di `src/`.
-Supplier: **Digiflazz** (bawaan) atau VIPayment. Pembayaran: Tripay.
+Supplier: **Digiflazz** (bawaan) atau VIPayment. Pembayaran: **DOKU** (bawaan) atau Tripay.
 
 ## Jalankan di komputer (localhost)
 
@@ -15,10 +15,11 @@ Halaman admin: `http://localhost:3001/admin` (password dari `ADMIN_PASSWORD`; kh
 
 Tanpa kunci API, server berjalan dalam **mode simulasi** (supplier & pembayaran tiruan, tidak ada uang sungguhan).
 
-## Menyambungkan Digiflazz & Tripay
+## Menyambungkan Digiflazz & DOKU
 
 1. Salin `.dev.vars.example` menjadi `.dev.vars` (komputer) atau `.env` (VPS), isi kuncinya.
-   Mulai dengan `DIGIFLAZZ_MODE=development` + Development Key, dan kunci **sandbox** Tripay.
+   Mulai dengan `DIGIFLAZZ_MODE=development` + Development Key, dan `DOKU_MODE=sandbox` + kunci sandbox DOKU.
+   Biaya metode bayar (ditambahkan ke total pembeli) diatur di `src/doku.js` → sesuaikan dengan tarif kontrak DOKU.
 2. `npm run df:list` → cocokkan brand/kategori di `src/catalog.js` (Digiflazz membatasi 1× per 5 menit).
 3. Atur untung di `wrangler.toml` bagian `[vars]` (`MARGIN_PERCENT`, `MARGIN_MIN`, `ROUND_TO`).
 
@@ -66,7 +67,8 @@ proxy_set_header X-Forwarded-Proto $scheme;
 
 Setelah online:
 - Digiflazz → Atur Koneksi → API: **whitelist IP VPS**, webhook `https://<domain>/api/callback/digiflazz` + secret (sama dengan `DIGIFLAZZ_WEBHOOK_SECRET`)
-- Tripay → callback `https://<domain>/api/callback/tripay`
+- DOKU Back Office → Notification URL `https://<domain>/api/callback/doku` (server juga mengirimkannya otomatis di setiap tagihan)
+- (Kalau memakai Tripay: callback `https://<domain>/api/callback/tripay`)
 - Backup database: salin `data/jeanshop.db` secara berkala
 
 ## Alternatif: Cloudflare Workers (hanya untuk VIPayment)

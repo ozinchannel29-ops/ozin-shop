@@ -37,7 +37,7 @@ function dotenv(file) {
 const env = {
   ...tomlVars(join(ROOT, "wrangler.toml")),
   ...dotenv(join(ROOT, existsSync(join(ROOT, ".env")) ? ".env" : ".dev.vars")),
-  ...Object.fromEntries(Object.entries(process.env).filter(([k]) => /^(SUPPLIER|DIGIFLAZZ_|VIP_|TRIPAY_|ADMIN_|MARGIN_|ROUND_TO|CUSTOMER_EMAIL|PORT|HOST|DB_PATH)/.test(k))),
+  ...Object.fromEntries(Object.entries(process.env).filter(([k]) => /^(SUPPLIER|PAYMENT|DOKU_|DIGIFLAZZ_|VIP_|TRIPAY_|ADMIN_|MARGIN_|ROUND_TO|CUSTOMER_EMAIL|PORT|HOST|DB_PATH)/.test(k))),
 };
 
 /* ---------- database: SQLite dengan antarmuka mirip Cloudflare D1 ---------- */

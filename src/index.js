@@ -2,7 +2,7 @@
 // handler ini menangani /api/*.
 import { getProduct, FIELDS } from "./catalog.js";
 import { getSupplier, SUPPLIERS } from "./supplier.js";
-import { payIsMock, payChannels, payCreate, payVerify, feeOf } from "./tripay.js";
+import { getPayment, PAYMENTS, feeOf, mockCreate } from "./payment.js";
 import { handleAdmin } from "./admin.js";
 
 const STATUS_LABEL = {
@@ -112,10 +112,10 @@ async function markPaid(env, inv) {
 
 /* ---------------- handler ---------------- */
 async function handleConfig(env) {
-  const channels = await payChannels(env);
+  const channels = await getPayment(env).channels(env);
   return json({
     auto: true,
-    simulation: { supplier: getSupplier(env).isMock(env), payment: payIsMock(env) },
+    simulation: { supplier: getSupplier(env).isMock(env), payment: getPayment(env).isMock(env) },
     payments: channels.map(({ code, name, group, icon, fee_flat, fee_percent, min, max }) => ({ code, name, group, icon, fee_flat, fee_percent, min, max })),
   });
 }
@@ -148,7 +148,8 @@ async function handleCreateOrder(env, request, origin) {
   const svc = (await getSupplier(env).services(env, product)).find((s) => s.code === body.code);
   if (!svc) throw new HttpError(400, "Pilih nominal terlebih dahulu");
   if (!svc.available) throw new HttpError(400, "Nominal ini sedang kosong, pilih yang lain");
-  const channel = (await payChannels(env)).find((c) => c.code === body.method);
+  const payment = getPayment(env);
+  const channel = (await payment.channels(env)).find((c) => c.code === body.method);
   if (!channel) throw new HttpError(400, "Pilih metode pembayaran");
 
   const price = sellPrice(env, svc.cost);
@@ -167,7 +168,7 @@ async function handleCreateOrder(env, request, origin) {
 
   let pay;
   try {
-    pay = await payCreate(env, { order, channel, origin });
+    pay = payment.isMock(env) ? mockCreate({ order, channel, origin }) : await payment.create(env, { order, channel, origin });
   } catch (e) {
     await updateOrder(env, order.inv, { status: "FAILED", note: `Tagihan gagal dibuat: ${e.message}` });
     throw new HttpError(502, `Pembayaran gagal dibuat: ${e.message}`);
@@ -179,6 +180,15 @@ async function handleCreateOrder(env, request, origin) {
 async function handleStatus(env, inv) {
   let order = await getOrder(env, inv);
   if (!order) throw new HttpError(404, "Invoice tidak ditemukan");
+  // Belum lunas & gateway punya cek status (DOKU) → tanyakan sendiri, jaga-jaga notifikasi terlambat
+  const pay = getPayment(env);
+  if (order.status === "UNPAID" && pay.status && !pay.isMock(env) && order.pay_ref && now() - Math.max(order.checked_at, order.created_at) > pay.pollMs) {
+    try {
+      await updateOrder(env, inv, { checked_at: now() });
+      await applyPayment(env, order, await pay.status(env, order));
+      order = await getOrder(env, inv);
+    } catch { /* coba lagi di permintaan berikutnya */ }
+  }
   // Masih diproses supplier → cek ulang dengan jeda aman per supplier (simulasi: setiap kali)
   const sup = getSupplier(env);
   if (order.status === "PROCESSING" && order.vip_trxid && (sup.isMock(env) || now() - order.checked_at > sup.pollMs)) {
@@ -192,24 +202,24 @@ async function handleStatus(env, inv) {
   return json(publicOrder(order));
 }
 
-async function handleTripayCallback(env, request) {
-  if (payIsMock(env)) throw new HttpError(404, "Not found");
-  const raw = await request.text();
-  if (!payVerify(env, raw, request.headers.get("X-Callback-Signature"))) return json({ success: false, message: "Invalid signature" }, 403);
-  if (request.headers.get("X-Callback-Event") !== "payment_status") return json({ success: false, message: "Unknown event" }, 400);
-  const cb = JSON.parse(raw);
-  const order = await getOrder(env, String(cb.merchant_ref || ""));
-  if (!order) return json({ success: false, message: "Order not found" }, 404);
-
-  if (cb.status === "PAID") {
-    if (Number(cb.total_amount) < order.amount) {
-      await updateOrder(env, order.inv, { note: `Nominal bayar tidak sesuai (${cb.total_amount}), perlu dicek admin` });
-    } else {
-      await markPaid(env, order.inv);
-    }
-  } else if (cb.status === "EXPIRED" || cb.status === "FAILED") {
+/** Status pembayaran dari gateway (callback atau cek status) → lunas / kedaluwarsa */
+async function applyPayment(env, order, { status, amount }) {
+  if (status === "PAID") {
+    if (!(amount >= order.amount)) await updateOrder(env, order.inv, { note: `Nominal bayar tidak sesuai (${amount}), perlu dicek admin` });
+    else await markPaid(env, order.inv);
+  } else if (status === "EXPIRED") {
     await updateOrder(env, order.inv, { status: "EXPIRED" }, "UNPAID");
   }
+}
+
+/** Callback payment gateway: /api/callback/doku atau /api/callback/tripay */
+async function handlePaymentCallback(env, request, name) {
+  const pay = PAYMENTS[name];
+  const cb = pay && (await pay.callback(env, request).catch(() => null));
+  if (!cb) return json({ success: false, message: "Invalid signature" }, 403);
+  const order = await getOrder(env, cb.inv);
+  if (!order) return json({ success: false, message: "Order not found" }, 404);
+  await applyPayment(env, order, cb);
   return json({ success: true });
 }
 
@@ -222,7 +232,7 @@ async function handleSupplierCallback(env, request, name) {
   return json({ result: true });
 }
 
-/* ---------------- simulasi pembayaran (hanya tanpa kunci Tripay) ---------------- */
+/* ---------------- simulasi pembayaran (hanya tanpa kunci payment gateway) ---------------- */
 const rupiah = (n) => "Rp " + Math.round(n).toLocaleString("id-ID");
 const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
@@ -240,7 +250,7 @@ dl{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;margin:0 0 20px}dt{c
 .pay{background:linear-gradient(135deg,#4aa3ff,#0f3f9e);color:#fff}.cancel{background:#161d2e;color:#9aa6bb}
 </style></head><body><form class="box" method="post">
 <span class="tag">MODE SIMULASI – tidak ada uang sungguhan</span>
-<h1>Pembayaran ${escapeHtml(o.method_name)}</h1><p>Halaman ini menggantikan halaman bayar Tripay selama kunci Tripay belum diisi.</p>
+<h1>Pembayaran ${escapeHtml(o.method_name)}</h1><p>Halaman ini menggantikan halaman bayar payment gateway selama kuncinya belum diisi.</p>
 <dl><dt>Invoice</dt><dd>${escapeHtml(o.inv)}</dd><dt>Produk</dt><dd>${escapeHtml(o.product)}</dd><dt>Item</dt><dd>${escapeHtml(o.item)}</dd>
 <dt>Status</dt><dd>${escapeHtml(STATUS_LABEL[o.status] || o.status)}</dd><dt>Total</dt><dd class="tot">${rupiah(o.amount)}</dd></dl>
 <input type="hidden" name="inv" value="${escapeHtml(o.inv)}">
@@ -273,10 +283,11 @@ export default {
       else if (m === "GET" && pathname === "/api/nickname") r = await handleNickname(env, url);
       else if (m === "POST" && pathname === "/api/order") r = await handleCreateOrder(env, request, origin);
       else if (m === "GET" && pathname.startsWith("/api/status/")) r = await handleStatus(env, decodeURIComponent(pathname.slice(12)).toUpperCase());
-      else if (m === "POST" && pathname === "/api/callback/tripay") r = await handleTripayCallback(env, request);
+      else if (m === "POST" && pathname === "/api/callback/doku") r = await handlePaymentCallback(env, request, "doku");
+      else if (m === "POST" && pathname === "/api/callback/tripay") r = await handlePaymentCallback(env, request, "tripay");
       else if (m === "POST" && pathname === "/api/callback/digiflazz") r = await handleSupplierCallback(env, request, "digiflazz");
       else if (m === "POST" && pathname === "/api/callback/vip") r = await handleSupplierCallback(env, request, "vipayment");
-      else if (pathname === "/api/mock/pay" && payIsMock(env)) r = m === "POST" ? await handleMockPay(env, request, origin) : await handleMockPayPage(env, url);
+      else if (pathname === "/api/mock/pay" && getPayment(env).isMock(env)) r = m === "POST" ? await handleMockPay(env, request, origin) : await handleMockPayPage(env, url);
       else if (pathname.startsWith("/api/admin/")) r = await handleAdmin(env, request, url, { getOrder, updateOrder, fulfil, STATUS_LABEL, HttpError, json });
       else throw new HttpError(404, "Not found");
       return r;

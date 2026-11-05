@@ -18,7 +18,15 @@ DIGIFLAZZ_WEBHOOK_SECRET=
 VIP_API_ID=
 VIP_API_KEY=
 
-# Tripay → Merchant → API & Integrasi (pakai kunci SANDBOX dulu untuk tes)
+# Payment gateway yang dipakai: doku | tripay
+PAYMENT=doku
+
+# DOKU → Back Office → Integration → API Keys (Client ID & Secret Key). sandbox dulu, lalu production
+DOKU_MODE=sandbox
+DOKU_CLIENT_ID=
+DOKU_SECRET_KEY=
+
+# Tripay (cadangan, dipakai bila PAYMENT=tripay) → Merchant → API & Integrasi
 TRIPAY_MERCHANT_CODE=
 TRIPAY_API_KEY=
 TRIPAY_PRIVATE_KEY=
