@@ -7,6 +7,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 
 const file = new URL(existsSync(new URL("../.env", import.meta.url)) ? "../.env" : "../.dev.vars", import.meta.url);
+if (!existsSync(file)) { console.error("Belum ada file .dev.vars / .env. Salin .dev.vars.example lalu isi kunci Digiflazz."); process.exit(1); }
 const vars = Object.fromEntries(
   readFileSync(file, "utf8").split(/\r?\n/).map((l) => l.match(/^\s*([A-Z][A-Z0-9_]*)\s*=(.*)$/)).filter(Boolean).map((m) => [m[1], m[2].trim()])
 );

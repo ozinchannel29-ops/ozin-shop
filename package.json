@@ -10,6 +10,7 @@
     "dev": "node server/node.mjs",
     "start": "node server/node.mjs",
     "df:list": "node scripts/df-list.mjs",
+    "df:test": "node scripts/df-test.mjs",
     "vip:list": "node scripts/vip-list.mjs",
     "dev:worker": "wrangler d1 migrations apply ozin-shop --local && wrangler dev --port 3001",
     "deploy:worker": "wrangler d1 migrations apply ozin-shop --remote && wrangler deploy"
