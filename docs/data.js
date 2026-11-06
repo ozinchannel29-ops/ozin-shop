@@ -48,7 +48,7 @@ const BANNERS = [
 
 /* c1, c2 = warna kartu (dipakai kalau belum ada gambar).
    img = (opsional) gambar kartu, mis. "assets/games/mobile-legends.jpg".
-   Ukuran gambar kartu: 600 × 900 px (rasio 2 : 3), JPG/WebP, idealnya < 150 KB.
+   Ukuran gambar kartu: 600 × 600 px (rasio 1 : 1, persegi), JPG/WebP, idealnya < 120 KB.
    Gambar tampil penuh, jadi masukkan logo/nama game & "JEAN SHOP" di desain gambarnya. */
 const PRODUCTS = [
   // ---------------- TOP UP GAME ----------------
