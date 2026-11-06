@@ -115,9 +115,9 @@ const PRODUCTS = [
     items: [20000, 50000, 100000, 200000, 500000, 1000000].map((n) => ({ name: `Token ${n.toLocaleString("id-ID")}`, price: n + 2000 })) },
 ];
 
-/* Gambar kartu = ikon aplikasi resmi (docs/assets/games/<slug>.jpg, 600×600).
-   Produk tanpa ikon (Valorant, Point Blank: tidak ada aplikasi resminya) tetap memakai kartu warna. */
-const NO_ICON = ["valorant", "point-blank"];
+/* Gambar kartu = ikon game/operator di docs/assets/games/<slug>.jpg (600×600).
+   Produk baru tanpa gambar: masukkan slug-nya ke NO_ICON supaya memakai kartu warna. */
+const NO_ICON = [];
 PRODUCTS.forEach((p) => { if (!p.img && !NO_ICON.includes(p.slug)) p.img = `assets/games/${p.slug}.jpg`; });
 
 const PAYMENTS = [
