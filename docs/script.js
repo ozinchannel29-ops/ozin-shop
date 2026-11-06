@@ -46,8 +46,9 @@
 
   /* Kartu bergambar: gambar tampil penuh (nama & logo game sudah ada di desain gambarnya) */
   const card = (p) => p.img ? `
-    <a class="game-card has-img" href="#/topup/${p.slug}" aria-label="${esc(p.name)}">
-      <img class="gc-img" src="${p.img}" alt="${esc(p.name)}" loading="lazy" />
+    <a class="game-card has-img" href="#/topup/${p.slug}">
+      <img class="gc-img" src="${p.img}" alt="" loading="lazy" />
+      <span class="gc-name">${esc(p.name)}</span>
     </a>` : `
     <a class="game-card" href="#/topup/${p.slug}" style="--c1:${p.c1};--c2:${p.c2}">
       <span class="gc-badge"><b>JEAN SHOP</b><small>TOP UP GAME</small></span>
