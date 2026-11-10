@@ -7,8 +7,8 @@
 const STORE = {
   name: "Jean Shop",
   domain: "jeantopup.com",
-  wa: "6287868325296",            // nomor WhatsApp admin (format 62…)
-  email: "ozinchannel29@gmail.com",
+  wa: "6287720826802",            // nomor WhatsApp admin (format 62…)
+  email: "ihsanyahya08@gmail.com",
   tagline: "Tempat top up sat set, anti ribet & banyak promonya",
 };
 

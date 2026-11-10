@@ -24,7 +24,7 @@ VIP_LEVEL = "basic"
 # sandbox | production
 TRIPAY_MODE = "sandbox"
 # Email pelanggan default untuk Tripay (wajib di API Tripay)
-CUSTOMER_EMAIL = "ozinchannel29@gmail.com"
+CUSTOMER_EMAIL = "ihsanyahya08@gmail.com"
 # IP server callback VIPayment (dari dokumentasi mereka)
 VIP_CALLBACK_IP = "178.248.73.218"
 
