@@ -238,7 +238,7 @@ async function handleSupplierCallback(env, request, name) {
   const sup = SUPPLIERS[name];
   const upd = sup && (await sup.callback(env, request).catch(() => null));
   if (!upd) return json({ result: false }, 403);
-  await applySupplierUpdate(env, upd);
+  if (!upd.ping) await applySupplierUpdate(env, upd);
   return json({ result: true });
 }
 

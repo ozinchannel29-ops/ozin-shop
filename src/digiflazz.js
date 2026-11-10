@@ -131,13 +131,18 @@ export const digiflazz = {
   canNickname: (env, product) => isMock(env) && product.kind === "game", // Digiflazz tidak punya API cek nickname
   nickname: async (env, product, target) => mockNickname(target),
 
-  /** Webhook Digiflazz (X-Hub-Signature = sha1 HMAC body dengan secret) → { trxid, status, note } atau null */
+  /** Webhook Digiflazz (X-Hub-Signature = sha1 HMAC body dengan secret) → { trxid, status, note }, { ping: true }, atau null */
   async callback(env, request) {
     if (isMock(env) || !env.DIGIFLAZZ_WEBHOOK_SECRET) return null;
     const raw = await request.text();
-    const expected = Buffer.from("sha1=" + createHmac("sha1", env.DIGIFLAZZ_WEBHOOK_SECRET).update(raw).digest("hex"));
-    const got = Buffer.from(String(request.headers.get("X-Hub-Signature") || ""));
-    if (expected.length !== got.length || !timingSafeEqual(expected, got)) return null;
+    const sameText = (a, b) => { const x = Buffer.from(String(a)), y = Buffer.from(String(b)); return x.length === y.length && timingSafeEqual(x, y); };
+    const sig = request.headers.get("X-Hub-Signature");
+    if (!sig) {
+      // Ping uji dari dashboard Digiflazz: tanpa tanda tangan, tapi membawa hook_id + secret milik kita. Tidak mengubah data.
+      let p; try { p = JSON.parse(raw); } catch { return null; }
+      return p?.hook_id && p?.hook?.secret && sameText(p.hook.secret, env.DIGIFLAZZ_WEBHOOK_SECRET) ? { ping: true } : null;
+    }
+    if (!sameText(sig, "sha1=" + createHmac("sha1", env.DIGIFLAZZ_WEBHOOK_SECRET).update(raw).digest("hex"))) return null;
     const d = JSON.parse(raw).data || {};
     return { trxid: String(d.ref_id || ""), status: mapStatus(d.status), note: noteOf(d) };
   },
