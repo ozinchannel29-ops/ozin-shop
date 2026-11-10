@@ -42,7 +42,7 @@ async function call(env, method, target, payload) {
     body,
   });
   const json = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error([].concat(json.error_messages || json.message || `DOKU HTTP ${res.status}`).join(", "));
+  if (!res.ok) throw new Error([].concat(json.error_messages || json.error?.message || json.message || `DOKU HTTP ${res.status}`).join(", "));
   return json;
 }
 
