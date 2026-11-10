@@ -75,7 +75,9 @@ export const doku = {
       },
       payment: { payment_due_date: 60, payment_method_types: [channel.code] },
       customer: { name: "Pelanggan Jean Shop", email: env.CUSTOMER_EMAIL, phone: order.wa },
-      additional_info: { override_notification_url: `${origin}/api/callback/doku` },
+      // DOKU hanya menerima URL notifikasi publik (https) yang path-nya sama dengan yang didaftarkan di dashboard.
+      // Di localhost tidak dikirim: status lunas diambil lewat cek status (lihat status() di bawah).
+      ...(origin.startsWith("https://") ? { additional_info: { override_notification_url: `${origin}/api/callback/doku` } } : {}),
     });
     const p = json.response?.payment;
     if (!p?.url) throw new Error("DOKU tidak mengembalikan halaman pembayaran");
