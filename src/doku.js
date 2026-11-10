@@ -42,7 +42,11 @@ async function call(env, method, target, payload) {
     body,
   });
   const json = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error([].concat(json.error_messages || json.error?.message || json.message || `DOKU HTTP ${res.status}`).join(", "));
+  if (!res.ok) {
+    const msg = [].concat(json.error_messages || json.error?.message || json.message || `DOKU HTTP ${res.status}`).join(", ");
+    if (/CHANNEL IS INACTIVE/i.test(msg)) throw new Error("metode pembayaran ini sedang tidak aktif, silakan pilih metode lain");
+    throw new Error(msg);
+  }
   return json;
 }
 
@@ -59,7 +63,11 @@ export const doku = {
   name: "DOKU",
   isMock,
 
-  channels: async () => CHANNELS,
+  /** DOKU_METHODS (opsional) = kode metode yang sudah aktif di dashboard DOKU, dipisah koma; kosong = semua */
+  async channels(env) {
+    const allow = String(env.DOKU_METHODS || "").split(",").map((s) => s.trim()).filter(Boolean);
+    return allow.length ? CHANNELS.filter((c) => allow.includes(c.code)) : CHANNELS;
+  },
 
   /** Biaya ditambahkan ke tagihan di sini (DOKU memotong biaya dari merchant) */
   async create(env, { order, channel, origin }) {

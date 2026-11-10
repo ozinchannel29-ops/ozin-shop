@@ -110,6 +110,16 @@ async function markPaid(env, inv) {
   if (await updateOrder(env, inv, { status: "PAID", paid_at: now() }, "UNPAID")) await fulfil(env, inv);
 }
 
+/** Daftar layanan supplier; gangguan supplier jadi pesan yang bisa dibaca pembeli */
+async function supplierServices(env, product) {
+  try {
+    return await getSupplier(env).services(env, product);
+  } catch (e) {
+    console.error(e);
+    throw new HttpError(503, e.message || "Supplier sedang gangguan, coba lagi sebentar lagi");
+  }
+}
+
 /* ---------------- handler ---------------- */
 async function handleConfig(env) {
   const channels = await getPayment(env).channels(env);
@@ -123,7 +133,7 @@ async function handleConfig(env) {
 async function handleProducts(env, slug) {
   const product = getProduct(slug);
   if (!product) throw new HttpError(404, "Produk tidak ditemukan");
-  const list = await getSupplier(env).services(env, product);
+  const list = await supplierServices(env, product);
   return json({ items: list.map((s) => ({ code: s.code, name: s.name, price: sellPrice(env, s.cost), available: s.available })) });
 }
 
@@ -145,7 +155,7 @@ async function handleCreateOrder(env, request, origin) {
   const wa = String(body.wa || "").replace(/\D/g, "");
   if (!/^\d{10,15}$/.test(wa)) throw new HttpError(400, "Nomor WhatsApp belum valid");
 
-  const svc = (await getSupplier(env).services(env, product)).find((s) => s.code === body.code);
+  const svc = (await supplierServices(env, product)).find((s) => s.code === body.code);
   if (!svc) throw new HttpError(400, "Pilih nominal terlebih dahulu");
   if (!svc.available) throw new HttpError(400, "Nominal ini sedang kosong, pilih yang lain");
   const payment = getPayment(env);

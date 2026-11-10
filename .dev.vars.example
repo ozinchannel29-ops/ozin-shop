@@ -25,6 +25,9 @@ PAYMENT=doku
 DOKU_MODE=sandbox
 DOKU_CLIENT_ID=
 DOKU_SECRET_KEY=
+# Metode yang sudah AKTIF di dashboard DOKU (Setting → Checkout Page → Payment Method Settings), pisahkan koma.
+# Kosong = tampilkan semua: QRIS,EMONEY_DANA,EMONEY_OVO,EMONEY_SHOPEE_PAY,VIRTUAL_ACCOUNT_BRI,VIRTUAL_ACCOUNT_BNI,VIRTUAL_ACCOUNT_BANK_MANDIRI,VIRTUAL_ACCOUNT_BCA
+DOKU_METHODS=
 
 # Tripay (cadangan, dipakai bila PAYMENT=tripay) → Merchant → API & Integrasi
 TRIPAY_MERCHANT_CODE=

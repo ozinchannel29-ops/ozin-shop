@@ -25,22 +25,42 @@ async function call(env, path, body) {
 }
 
 // Daftar harga: Digiflazz membatasi ambil semua produk maks. 1× per 5 menit → simpan 10 menit, saring di sini.
+// Salinan terakhir juga disimpan di database (tabel cache) supaya tetap ada setelah server dinyalakan ulang.
+const PRICE_TTL = 10 * 60 * 1000;
+const PRICE_KEY = "digiflazz:pricelist";
 let priceCache = null; // { at, list }
 let pricePending = null;
+
+async function loadSavedPrices(env) {
+  try {
+    const row = await env.DB.prepare("SELECT value, updated_at FROM cache WHERE key = ?").bind(PRICE_KEY).first();
+    return row ? { at: row.updated_at, list: JSON.parse(row.value) } : null;
+  } catch { return null; } // tabel belum ada (migrasi belum jalan)
+}
+
+async function savePrices(env, cache) {
+  try {
+    await env.DB.prepare("INSERT INTO cache (key, value, updated_at) VALUES (?, ?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at")
+      .bind(PRICE_KEY, JSON.stringify(cache.list), cache.at).run();
+  } catch { /* cukup di memori */ }
+}
+
 async function priceList(env) {
-  if (priceCache && Date.now() - priceCache.at < 10 * 60 * 1000) return priceCache.list;
+  priceCache ||= await loadSavedPrices(env);
+  if (priceCache && Date.now() - priceCache.at < PRICE_TTL) return priceCache.list;
   pricePending ||= call(env, "price-list", { cmd: "prepaid", username: env.DIGIFLAZZ_USERNAME, sign: md5(env.DIGIFLAZZ_USERNAME + env.DIGIFLAZZ_API_KEY + "pricelist") })
-    .then((data) => {
+    .then(async (data) => {
       if (!Array.isArray(data)) throw new Error(data?.message || "Gagal mengambil daftar harga Digiflazz");
       priceCache = { at: Date.now(), list: data };
+      await savePrices(env, priceCache);
       return data;
     })
     .finally(() => { pricePending = null; });
   try {
     return await pricePending;
   } catch (e) {
-    if (priceCache) return priceCache.list; // pakai daftar lama kalau Digiflazz sedang menolak (mis. batas 5 menit)
-    throw e;
+    if (priceCache) return priceCache.list; // pakai daftar terakhir kalau Digiflazz sedang menolak (mis. batas 5 menit)
+    throw new Error(/limitasi|limit/i.test(e.message) ? "Daftar harga sedang dimuat ulang, coba lagi dalam beberapa menit" : e.message);
   }
 }
 
