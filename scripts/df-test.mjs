@@ -33,12 +33,17 @@ async function topup(no, ref) {
 }
 
 const rows = [];
+const raw = [];
 for (const [i, c] of CASES.entries()) {
   const ref = `TEST${run}${i}`;
   const d = await topup(c.no, ref);
+  raw.push(d);
   rows.push({ nomor: c.no, harapan: c.expect, status: d.status, rc: d.rc, pesan: d.message, sn: d.sn || "", ref });
 }
 console.table(rows);
+// Respons asli dari Digiflazz (tanpa kunci) — bagian ini yang bisa disalin ke CS Digiflazz bila diminta
+console.log("\n=== Respons API Digiflazz (salin bagian ini untuk CS) ===");
+for (const d of raw) console.log(JSON.stringify({ data: d }, null, 2));
 if (rows.some((r) => r.rc === "45")) console.log("rc 45 = IP belum di-whitelist di Digiflazz (Atur Koneksi → API).");
 if (rows.some((r) => r.rc === "41")) console.log("rc 41 = signature/kunci salah, atau kunci tidak sesuai mode (Development/Production).");
 
