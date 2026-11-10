@@ -95,7 +95,7 @@ export const digiflazz = {
     if (isMock(env)) return mockServices(product);
     const map = product.map.df;
     return (await priceList(env))
-      .filter((s) => same(s.brand, map.brand) && (!map.category || same(s.category, map.category)) && (!map.type || map.type.test(String(s.type))))
+      .filter((s) => [].concat(map.brand).some((b) => same(s.brand, b)) && (!map.category || same(s.category, map.category)) && (!map.type || map.type.test(String(s.type))))
       .map((s) => ({
         code: String(s.buyer_sku_code),
         name: String(s.product_name),

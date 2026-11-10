@@ -4,6 +4,7 @@
 import data from "../docs/data.js";
 
 // Game: nama di VIPayment (filter_game); brand Digiflazz = nama yang sama huruf besar, kategori "Games".
+// dfBrand boleh berupa daftar beberapa kemungkinan nama brand (dicocokkan tanpa beda huruf besar/kecil).
 const game = (name, { nick, dfBrand } = {}) => ({
   vip: { filter: name, nick },
   df: { brand: dfBrand || name.toUpperCase(), category: "Games" },
@@ -12,26 +13,25 @@ const game = (name, { nick, dfBrand } = {}) => ({
 const GAME = {
   "mobile-legends": game("Mobile Legends", { nick: "mobile-legends" }),
   "free-fire": game("Free Fire", { nick: "free-fire" }),
+  "free-fire-max": game("Free Fire MAX", { dfBrand: ["FREE FIRE MAX", "FREEFIRE MAX", "FF MAX"] }),
+  "arena-of-valor": game("Arena of Valor", { dfBrand: ["ARENA OF VALOR", "AOV", "GARENA AOV"] }),
   "pubg-mobile": game("PUBG Mobile"),
+  "call-of-duty-mobile": game("Call of Duty Mobile", { dfBrand: ["CALL OF DUTY MOBILE", "CALL OF DUTY", "CODM"] }),
   "valorant": game("Valorant"),
-  "arena-breakout": game("Arena Breakout"),
-  "blood-strike": game("Blood Strike"),
-  "call-of-duty-mobile": game("Call of Duty Mobile"),
-  "genshin-impact": game("Genshin Impact"),
-  "growtopia": game("Growtopia"),
-  "honor-of-kings": game("Honor of Kings"),
-  "magic-chess-go-go": game("Magic Chess", { dfBrand: "MAGIC CHESS GO GO" }),
-  "stumble-guys": game("Stumble Guys"),
-  "honkai-star-rail": game("Honkai Star Rail"),
-  "roblox": game("Roblox"),
-  "point-blank": game("Point Blank"),
-  "clash-of-clans": game("Clash of Clans"),
-  "zenless-zone-zero": game("Zenless Zone Zero"),
-  "delta-force": game("Delta Force"),
-  "wuthering-waves": game("Wuthering Waves"),
-  "efootball": game("eFootball"),
   "sausage-man": game("Sausage Man"),
-  "super-sus": game("Super Sus"),
+  "genshin-impact": game("Genshin Impact"),
+  "league-of-legends-wild-rift": game("League of Legends Wild Rift", { dfBrand: ["LEAGUE OF LEGENDS WILD RIFT", "WILD RIFT", "LOL WILD RIFT"] }),
+  "stumble-guys": game("Stumble Guys"),
+  "fc-mobile": game("FC Mobile", { dfBrand: ["EA SPORTS FC MOBILE", "FC MOBILE", "FIFA MOBILE"] }),
+  "growtopia": game("Growtopia"),
+  "pubg-new-state": game("PUBG New State", { dfBrand: ["PUBG NEW STATE", "NEW STATE MOBILE", "PUBG NEW STATE MOBILE"] }),
+  "league-of-legends-pc": game("League of Legends", { dfBrand: ["LEAGUE OF LEGENDS", "LEAGUE OF LEGENDS PC", "LOL PC"] }),
+  "honor-of-kings": game("Honor of Kings"),
+  "magic-chess-go-go": game("Magic Chess", { dfBrand: ["MAGIC CHESS GO GO", "MAGIC CHESS"] }),
+  "delta-force": game("Delta Force"),
+  "last-war-survival": game("Last War Survival", { dfBrand: ["LAST WAR SURVIVAL", "LAST WAR"] }),
+  "asphalt-9": game("Asphalt 9", { dfBrand: ["ASPHALT 9", "ASPHALT 9 LEGENDS", "ASPHALT LEGENDS"] }),
+  "dragon-city": game("Dragon City"),
 };
 
 const pulsa = (brand) => ({ vip: { brand, type: /pulsa/i }, df: { brand, category: "Pulsa" } });
