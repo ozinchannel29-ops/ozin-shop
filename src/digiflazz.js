@@ -96,6 +96,7 @@ export const digiflazz = {
     const map = product.map.df;
     return (await priceList(env))
       .filter((s) => [].concat(map.brand).some((b) => same(s.brand, b)) && (!map.category || same(s.category, map.category)) && (!map.type || map.type.test(String(s.type))))
+      .filter((s) => !/cek (username|nickname|id)/i.test(String(s.product_name))) // layanan cek akun, bukan nominal top up
       .map((s) => ({
         code: String(s.buyer_sku_code),
         name: String(s.product_name),
