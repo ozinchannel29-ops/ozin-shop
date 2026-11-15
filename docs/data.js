@@ -107,10 +107,6 @@ const PRODUCTS = [
     slug: "pulsa-" + slug, name: "Pulsa " + name, short, cat: "pulsa", publisher: name, c1, c2, fields: "phone",
     items: [5000, 10000, 15000, 20000, 25000, 50000, 75000, 100000, 150000, 200000].map((n) => ({ name: `Pulsa ${n.toLocaleString("id-ID")}`, price: n + 1500 })),
   })),
-
-  // ---------------- TOKEN ----------------
-  { slug: "token-pln", name: "Token PLN", short: "PLN", cat: "token", publisher: "PLN", c1: "#0284c7", c2: "#061e30", fields: "meter", popular: false,
-    items: [20000, 50000, 100000, 200000, 500000, 1000000].map((n) => ({ name: `Token ${n.toLocaleString("id-ID")}`, price: n + 2000 })) },
 ];
 
 /* img  = ikon persegi docs/assets/games/<slug>.jpg (600×600) → dipakai di tempat kecil (Populer, pencarian, halaman top up).

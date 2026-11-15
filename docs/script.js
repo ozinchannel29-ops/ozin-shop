@@ -10,7 +10,6 @@
   const CATS = [
     { id: "topup", label: "Top Up" },
     { id: "pulsa", label: "Pulsa" },
-    { id: "token", label: "Token" },
   ];
 
   /* ---------- penyimpanan transaksi di perangkat ---------- */
@@ -493,7 +492,7 @@
     else pageNotFound();
 
     const p = parts[0] === "topup" && bySlug(parts[1]);
-    document.title = p ? `Top Up ${p.name} Murah | Jean Shop` : "Jean Shop | Top Up Game, Pulsa & Token PLN Murah";
+    document.title = p ? `Top Up ${p.name} Murah | Jean Shop` : "Jean Shop | Top Up Game & Pulsa Murah";
     window.scrollTo({ top: 0 });
   }
 

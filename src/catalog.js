@@ -43,7 +43,6 @@ const PREPAID = {
   "pulsa-axis": pulsa("AXIS"),
   "pulsa-tri": pulsa("TRI"),
   "pulsa-smartfren": pulsa("SMARTFREN"),
-  "token-pln": { vip: { brand: "PLN", type: /pln|token/i }, df: { brand: "PLN", category: "PLN" } },
 };
 
 export const { FIELDS } = data;
