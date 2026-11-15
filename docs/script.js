@@ -44,11 +44,16 @@
       ${p.img ? `<img src="${p.img}" alt="" loading="lazy" />` : `<span class="cover-mark">${esc(p.short)}</span>`}
     </div>`;
 
-  /* Kartu bergambar: gambar tampil penuh (nama & logo game sudah ada di desain gambarnya) */
-  const card = (p) => p.img ? `
-    <a class="game-card has-img" href="#/topup/${p.slug}">
-      <img class="gc-img" src="${p.img}" alt="" loading="lazy" />
+  /* Kartu: desain tegak penuh (nama & logo sudah ada di gambar) → ikon di tengah + nama → kartu warna */
+  const card = (p) => p.card ? `
+    <a class="game-card has-card" href="#/topup/${p.slug}" aria-label="${esc(p.name)}">
+      <img class="gc-img" src="${p.card}" alt="${esc(p.name)}" loading="lazy" />
+    </a>` : p.img ? `
+    <a class="game-card has-icon" href="#/topup/${p.slug}" style="--c1:${p.c1};--c2:${p.c2}">
+      <span class="gc-badge"><b>JEAN SHOP</b><small>TOP UP GAME</small></span>
+      <img class="gc-icon" src="${p.img}" alt="" loading="lazy" />
       <span class="gc-name">${esc(p.name)}</span>
+      <span class="gc-foot">${esc(p.publisher)}</span>
     </a>` : `
     <a class="game-card" href="#/topup/${p.slug}" style="--c1:${p.c1};--c2:${p.c2}">
       <span class="gc-badge"><b>JEAN SHOP</b><small>TOP UP GAME</small></span>

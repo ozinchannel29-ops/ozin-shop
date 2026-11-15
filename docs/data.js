@@ -113,10 +113,17 @@ const PRODUCTS = [
     items: [20000, 50000, 100000, 200000, 500000, 1000000].map((n) => ({ name: `Token ${n.toLocaleString("id-ID")}`, price: n + 2000 })) },
 ];
 
-/* Gambar kartu = ikon game/operator di docs/assets/games/<slug>.jpg (600×600).
-   Produk baru tanpa gambar: masukkan slug-nya ke NO_ICON supaya memakai kartu warna. */
+/* img  = ikon persegi docs/assets/games/<slug>.jpg (600×600) → dipakai di tempat kecil (Populer, pencarian, halaman top up).
+   card = desain kartu tegak docs/assets/cards/<slug>.jpg (600×900, rasio 2:3) → dipakai di daftar game.
+   Produk tanpa desain kartu (mis. pulsa/PLN) menampilkan ikonnya di tengah kartu. */
 const NO_ICON = [];
-PRODUCTS.forEach((p) => { if (!p.img && !NO_ICON.includes(p.slug)) p.img = `assets/games/${p.slug}.jpg`; });
+const CARDS = ["mobile-legends", "free-fire", "free-fire-max", "arena-of-valor", "pubg-mobile", "call-of-duty-mobile", "valorant", "sausage-man",
+  "genshin-impact", "league-of-legends-wild-rift", "stumble-guys", "fc-mobile", "growtopia", "pubg-new-state", "league-of-legends-pc",
+  "honor-of-kings", "magic-chess-go-go", "delta-force", "last-war-survival", "asphalt-9", "dragon-city"];
+PRODUCTS.forEach((p) => {
+  if (!p.img && !NO_ICON.includes(p.slug)) p.img = `assets/games/${p.slug}.jpg`;
+  if (!p.card && CARDS.includes(p.slug)) p.card = `assets/cards/${p.slug}.jpg`;
+});
 
 const PAYMENTS = [
   { id: "qris", name: "QRIS", note: "Semua e-wallet & m-banking", fee: 0.007 },
