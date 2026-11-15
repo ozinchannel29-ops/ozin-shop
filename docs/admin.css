@@ -28,7 +28,7 @@
 .adm-tabs button { flex: none; padding: 7px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #d0d8e6; background: var(--panel-2); border: 1px solid var(--line); }
 .adm-tabs button.active { color: #fff; background: var(--grad); border-color: transparent; }
 .adm-tabs button .n { margin-left: 4px; padding: 0 6px; border-radius: 99px; font-size: 10.5px; background: #ef4444; color: #fff; }
-.adm-filters input { flex: 1; min-width: 220px; max-width: 360px; height: 38px; padding: 0 12px; border-radius: 10px; background: #0b101c; border: 1px solid var(--line); outline: none; }
+.adm-filters input { flex: 1; min-width: 220px; max-width: 360px; height: 38px; padding: 0 12px; border-radius: 10px; background: #0c1a3a; border: 1px solid var(--line); outline: none; }
 .adm-filters input:focus { border-color: var(--primary); }
 
 /* Daftar pesanan */
