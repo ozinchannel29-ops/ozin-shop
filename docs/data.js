@@ -39,11 +39,11 @@ const FIELDS = {
 const list = (unit, rows) => rows.map(([qty, price]) => ({ name: `${qty} ${unit}`, price }));
 
 /* Banner beranda. Kosong = pakai banner tulisan bawaan.
-   Ukuran gambar: 1920 × 620 px (rasio 3,1 : 1), JPG/WebP, idealnya < 300 KB.
+   Ukuran gambar: 1920 × 640 px (rasio 3 : 1), JPG/WebP, idealnya < 300 KB.
    Taruh file di assets/banners/, contoh:
    { img: "assets/banners/welcome.jpg", alt: "Welcome to Jean Shop", link: "#/topup/mobile-legends" } */
 const BANNERS = [
-  { img: "assets/banners/welcome.jpg", alt: "Welcome to Jean Shop – buka 25 jam" },
+  { img: "assets/banners/welcome.jpg", alt: "Welcome to Jeantopup – top up game termurah & terpercaya" },
 ];
 
 /* c1, c2 = warna kartu (dipakai kalau belum ada gambar).
@@ -115,10 +115,14 @@ const PRODUCTS = [
 const NO_ICON = [];
 const CARDS = ["mobile-legends", "free-fire", "free-fire-max", "arena-of-valor", "pubg-mobile", "call-of-duty-mobile", "valorant", "sausage-man",
   "genshin-impact", "league-of-legends-wild-rift", "stumble-guys", "fc-mobile", "growtopia", "pubg-new-state", "league-of-legends-pc",
-  "honor-of-kings", "magic-chess-go-go", "delta-force", "last-war-survival", "asphalt-9", "dragon-city"];
+  "honor-of-kings", "magic-chess-go-go", "delta-force", "last-war-survival", "asphalt-9", "dragon-city",
+  "pulsa-telkomsel", "pulsa-indosat", "pulsa-xl", "pulsa-axis", "pulsa-tri", "pulsa-smartfren"];
+/* popular_img = sampul panjang kotak "Populer Sekarang" docs/assets/popular/<slug>.jpg (900×240, rasio 3,75 : 1) */
+const POPULAR_IMGS = ["free-fire", "mobile-legends", "pubg-mobile", "genshin-impact"];
 PRODUCTS.forEach((p) => {
   if (!p.img && !NO_ICON.includes(p.slug)) p.img = `assets/games/${p.slug}.jpg`;
   if (!p.card && CARDS.includes(p.slug)) p.card = `assets/cards/${p.slug}.jpg`;
+  if (!p.popular_img && POPULAR_IMGS.includes(p.slug)) p.popular_img = `assets/popular/${p.slug}.jpg`;
 });
 
 const PAYMENTS = [

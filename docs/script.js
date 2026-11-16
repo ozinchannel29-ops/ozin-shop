@@ -104,7 +104,10 @@
         <h3 class="sec-title"><span class="fire">🔥</span> POPULER SEKARANG</h3>
         <p class="sec-sub">Berikut adalah beberapa produk yang paling sering dipilih.</p>
         <div class="popular">
-          ${tiles.map((t) => `
+          ${tiles.map((t) => t.p?.popular_img ? `
+            <a class="pop-card has-img" href="${t.href}" aria-label="${esc(t.title)}">
+              <img src="${t.p.popular_img}" alt="${esc(t.title)} – ${esc(t.sub)}" loading="lazy" />
+            </a>` : `
             <a class="pop-card" href="${t.href}" ${t.ext ? 'target="_blank" rel="noopener"' : ""}>
               ${cover(t.p, "pop-cover")}
               <span><b>${esc(t.title)}</b><small>${esc(t.sub)}</small></span>
