@@ -4,9 +4,6 @@
 # Password halaman admin (/admin). Wajib diisi begitu ada kunci asli di bawah.
 ADMIN_PASSWORD=
 
-# Supplier yang dipakai: digiflazz | vipayment
-SUPPLIER=digiflazz
-
 # Digiflazz → Atur Koneksi → API (username, API key, whitelist IP server, webhook)
 # development = pakai Development Key (transaksi uji), production = pakai Production Key
 DIGIFLAZZ_MODE=development
@@ -14,22 +11,9 @@ DIGIFLAZZ_USERNAME=
 DIGIFLAZZ_API_KEY=
 DIGIFLAZZ_WEBHOOK_SECRET=
 
-# VIPayment (cadangan, dipakai bila SUPPLIER=vipayment)
-VIP_API_ID=
-VIP_API_KEY=
-
-# Payment gateway yang dipakai: doku | tripay
-PAYMENT=doku
-
-# DOKU → Back Office → Integration → API Keys (Client ID & Secret Key). sandbox dulu, lalu production
-DOKU_MODE=sandbox
-DOKU_CLIENT_ID=
-DOKU_SECRET_KEY=
-# Metode yang sudah AKTIF di dashboard DOKU (Setting → Checkout Page → Payment Method Settings), pisahkan koma.
-# Kosong = tampilkan semua: QRIS,EMONEY_DANA,EMONEY_OVO,EMONEY_SHOPEE_PAY,VIRTUAL_ACCOUNT_BRI,VIRTUAL_ACCOUNT_BNI,VIRTUAL_ACCOUNT_BANK_MANDIRI,VIRTUAL_ACCOUNT_BCA
-DOKU_METHODS=
-
-# Tripay (cadangan, dipakai bila PAYMENT=tripay) → Merchant → API & Integrasi
+# Tripay → Merchant → API & Integrasi
+# sandbox = transaksi uji (pakai kunci SANDBOX), production = uang sungguhan (pakai kunci PRODUCTION)
+TRIPAY_MODE=sandbox
 TRIPAY_MERCHANT_CODE=
 TRIPAY_API_KEY=
 TRIPAY_PRIVATE_KEY=

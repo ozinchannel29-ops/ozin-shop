@@ -37,7 +37,7 @@ function dotenv(file) {
 const env = {
   ...tomlVars(join(ROOT, "wrangler.toml")),
   ...dotenv(join(ROOT, existsSync(join(ROOT, ".env")) ? ".env" : ".dev.vars")),
-  ...Object.fromEntries(Object.entries(process.env).filter(([k]) => /^(SUPPLIER|PAYMENT|DOKU_|DIGIFLAZZ_|VIP_|TRIPAY_|ADMIN_|MARGIN_|ROUND_TO|CUSTOMER_EMAIL|PORT|HOST|DB_PATH)/.test(k))),
+  ...Object.fromEntries(Object.entries(process.env).filter(([k]) => /^(DIGIFLAZZ_|TRIPAY_|ADMIN_|MARGIN_|ROUND_TO|CUSTOMER_EMAIL|PORT|HOST|DB_PATH)/.test(k))),
 };
 
 /* ---------- database: SQLite dengan antarmuka mirip Cloudflare D1 ---------- */
@@ -122,6 +122,5 @@ http.createServer(async (req, res) => {
     res.end("500 - Kesalahan server");
   }
 }).listen(Number(env.PORT) || 3001, env.HOST || "127.0.0.1", () => {
-  const sup = (env.SUPPLIER || "digiflazz").toLowerCase();
-  console.log(`Jean Shop jalan di http://${env.HOST || "127.0.0.1"}:${env.PORT || 3001}  (supplier: ${sup}, database: ${relative(ROOT, dbPath)})`);
+  console.log(`Jean Shop jalan di http://${env.HOST || "127.0.0.1"}:${env.PORT || 3001}  (Digiflazz + Tripay, database: ${relative(ROOT, dbPath)})`);
 });

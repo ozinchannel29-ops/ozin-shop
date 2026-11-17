@@ -1,10 +1,9 @@
-// Pilih payment gateway lewat PAYMENT = doku (bawaan) | tripay. Tanpa kunci → simulasi (/api/mock/pay).
-import { doku } from "./doku.js";
+// Payment gateway: Tripay. Tanpa kunci → simulasi (/api/mock/pay).
 import { tripay } from "./tripay.js";
 
-export const PAYMENTS = { doku, tripay };
+export const PAYMENTS = { tripay };
 
-export const getPayment = (env) => PAYMENTS[String(env.PAYMENT || "doku").toLowerCase()] || doku;
+export const getPayment = () => tripay;
 
 export const feeOf = (ch, price) => Math.ceil(ch.fee_flat + (price * ch.fee_percent) / 100);
 

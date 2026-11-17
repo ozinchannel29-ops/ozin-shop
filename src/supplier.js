@@ -1,7 +1,6 @@
-// Pilih supplier lewat SUPPLIER = digiflazz (bawaan) | vipayment
+// Supplier: Digiflazz. Tanpa kunci → simulasi (lihat mock.js).
 import { digiflazz } from "./digiflazz.js";
-import { vipayment } from "./vip.js";
 
-export const SUPPLIERS = { digiflazz, vipayment };
+export const SUPPLIERS = { digiflazz };
 
-export const getSupplier = (env) => SUPPLIERS[String(env.SUPPLIER || "digiflazz").toLowerCase()] || digiflazz;
+export const getSupplier = () => digiflazz;

@@ -1,18 +1,17 @@
-// Pemetaan produk Jean Shop (slug di docs/data.js) → produk di supplier (Digiflazz & VIPayment).
-// ⚠ Nama brand/kategori di bawah perlu dicocokkan sekali dengan data asli supplier:
-//    Digiflazz: `npm run df:list`   VIPayment: `npm run vip:list`   (setelah kunci diisi di .dev.vars)
+// Pemetaan produk Jean Shop (slug di docs/data.js) → produk di Digiflazz.
+// ⚠ Nama brand/kategori di bawah perlu dicocokkan sekali dengan data asli Digiflazz:
+//    `npm run df:list`   (setelah kunci diisi di .dev.vars)
 import data from "../docs/data.js";
 
-// Game: nama di VIPayment (filter_game); brand Digiflazz = nama yang sama huruf besar, kategori "Games".
+// Game: brand Digiflazz = nama game huruf besar, kategori "Games".
 // dfBrand boleh berupa daftar beberapa kemungkinan nama brand (dicocokkan tanpa beda huruf besar/kecil).
-const game = (name, { nick, dfBrand } = {}) => ({
-  vip: { filter: name, nick },
+const game = (name, { dfBrand } = {}) => ({
   df: { brand: dfBrand || name.toUpperCase(), category: "Games" },
 });
 
 const GAME = {
-  "mobile-legends": game("Mobile Legends", { nick: "mobile-legends" }),
-  "free-fire": game("Free Fire", { nick: "free-fire" }),
+  "mobile-legends": game("Mobile Legends"),
+  "free-fire": game("Free Fire"),
   "free-fire-max": game("Free Fire MAX", { dfBrand: ["FREE FIRE MAX", "FREEFIRE MAX", "FF MAX"] }),
   "arena-of-valor": game("Arena of Valor", { dfBrand: ["ARENA OF VALOR", "AOV", "GARENA AOV"] }),
   "pubg-mobile": game("PUBG Mobile"),
@@ -34,7 +33,7 @@ const GAME = {
   "dragon-city": game("Dragon City"),
 };
 
-const pulsa = (brand) => ({ vip: { brand, type: /pulsa/i }, df: { brand, category: "Pulsa" } });
+const pulsa = (brand) => ({ df: { brand, category: "Pulsa" } });
 
 const PREPAID = {
   "pulsa-telkomsel": pulsa("TELKOMSEL"),
@@ -47,7 +46,7 @@ const PREPAID = {
 
 export const { FIELDS } = data;
 
-/** Produk lengkap: data tampilan dari data.js + pemetaan supplier (map.vip / map.df). null kalau tidak dikenal. */
+/** Produk lengkap: data tampilan dari data.js + pemetaan Digiflazz (map.df). null kalau tidak dikenal. */
 export function getProduct(slug) {
   const p = data.PRODUCTS.find((x) => x.slug === slug);
   if (!p) return null;

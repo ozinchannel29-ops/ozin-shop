@@ -1,4 +1,4 @@
-// Payment gateway Tripay (cadangan). Aktif bila PAYMENT=tripay.
+// Payment gateway Tripay.
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { Buffer } from "node:buffer";
 

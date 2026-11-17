@@ -1,4 +1,4 @@
-// Supplier Digiflazz (api.digiflazz.com/v1). Aktif bila SUPPLIER=digiflazz (bawaan).
+// Supplier Digiflazz (api.digiflazz.com/v1).
 // ⚠ Digiflazz hanya menerima panggilan dari IP yang di-whitelist → jalankan server di VPS ber-IP tetap.
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { Buffer } from "node:buffer";

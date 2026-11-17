@@ -11,7 +11,7 @@ const PAGE_SIZE = 50;
 
 function adminPassword(env) {
   if (env.ADMIN_PASSWORD) return env.ADMIN_PASSWORD;
-  // Password bawaan hanya kalau BELUM ada kunci supplier/pembayaran apa pun
+  // Password bawaan hanya kalau BELUM ada kunci Digiflazz/Tripay
   return Object.values(SUPPLIERS).every((s) => s.isMock(env)) && Object.values(PAYMENTS).every((p) => p.isMock(env)) ? "admin" : "";
 }
 

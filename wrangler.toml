@@ -19,14 +19,10 @@ migrations_dir = "migrations"
 MARGIN_PERCENT = "5"
 MARGIN_MIN = "500"
 ROUND_TO = "100"
-# Level harga modal di VIPayment: basic | premium | special
-VIP_LEVEL = "basic"
 # sandbox | production
 TRIPAY_MODE = "sandbox"
 # Email pelanggan default untuk Tripay (wajib di API Tripay)
 CUSTOMER_EMAIL = "ihsanyahya08@gmail.com"
-# IP server callback VIPayment (dari dokumentasi mereka)
-VIP_CALLBACK_IP = "178.248.73.218"
 
 # Rahasia & pilihan supplier TIDAK ditaruh di sini: lihat .dev.vars.example
 # (komputer: .dev.vars | VPS: .env | Cloudflare: wrangler secret put <NAMA>).
