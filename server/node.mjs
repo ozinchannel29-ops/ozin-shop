@@ -2,11 +2,16 @@
 //   node server/node.mjs           → http://127.0.0.1:3001
 // Pengaturan: [vars] di wrangler.toml, lalu ditimpa .env (VPS) / .dev.vars (komputer) / variabel lingkungan.
 import http from "node:http";
+import net from "node:net";
 import { readFileSync, existsSync, mkdirSync, readdirSync, statSync } from "node:fs";
 import { join, normalize, extname, relative, dirname, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DatabaseSync } from "node:sqlite";
 import app from "../src/index.js";
+
+// Server tanpa IPv6 + API di belakang Cloudflare (Tripay): Node mencoba tiap alamat IPv6/IPv4 hanya 250 ms,
+// padahal sambungan IPv4 dari VPS kadang butuh ±1 detik → semua percobaan gagal (ETIMEDOUT). Beri 2 detik per alamat.
+net.setDefaultAutoSelectFamilyAttemptTimeout(2000);
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DOCS = join(ROOT, "docs");
