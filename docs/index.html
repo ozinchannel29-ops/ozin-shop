@@ -49,6 +49,9 @@
       <a href="#/cek-transaksi" data-nav="cek-transaksi">
         <svg class="ico" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 11h7M9 15h5"/><circle cx="17" cy="17" r="3"/><path d="m21 21-1.8-1.8"/></svg>Cek Transaksi
       </a>
+      <a href="https://jbjean.com" target="_blank" rel="noopener">
+        <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Beli Akun
+      </a>
     </nav>
   </header>
 
@@ -89,15 +92,44 @@
           </span>
           <div><b>100% Aman</b><small>Transaksi terjamin</small></div>
         </div>
-        <div class="pay-logos">
-          <span class="pay qris">QRIS</span>
-          <span class="pay dana">DANA</span>
-          <span class="pay ovo">OVO</span>
-          <span class="pay spay">ShopeePay</span>
+        <!-- Metode bayar aktif di Tripay; daftar ditulis 2× supaya animasi berputar tanpa jeda -->
+        <div class="pay-marquee" role="region" aria-label="Metode pembayaran yang tersedia">
+          <div class="pay-track">
+            <ul class="pay-set">
+              <li class="pay-txt">QRIS</li>
+              <li><img src="assets/payments/dana.png" alt="DANA" /></li>
+              <li><img src="assets/payments/ovo.png" alt="OVO" /></li>
+              <li><img src="assets/payments/shopeepay.png" alt="ShopeePay" /></li>
+              <li><img src="assets/payments/bcava.png" alt="BCA Virtual Account" /></li>
+              <li><img src="assets/payments/briva.png" alt="BRI Virtual Account" /></li>
+              <li><img src="assets/payments/bniva.png" alt="BNI Virtual Account" /></li>
+              <li><img src="assets/payments/bsiva.png" alt="BSI Virtual Account" /></li>
+              <li><img src="assets/payments/permatava.png" alt="Permata Virtual Account" /></li>
+              <li><img src="assets/payments/cimbva.png" alt="CIMB Niaga Virtual Account" /></li>
+              <li><img src="assets/payments/danamonva.png" alt="Danamon Virtual Account" /></li>
+              <li><img src="assets/payments/alfamart.png" alt="Alfamart" /></li>
+              <li><img src="assets/payments/indomaret.png" alt="Indomaret" /></li>
+            </ul>
+            <ul class="pay-set" aria-hidden="true">
+              <li class="pay-txt">QRIS</li>
+              <li><img src="assets/payments/dana.png" alt="" /></li>
+              <li><img src="assets/payments/ovo.png" alt="" /></li>
+              <li><img src="assets/payments/shopeepay.png" alt="" /></li>
+              <li><img src="assets/payments/bcava.png" alt="" /></li>
+              <li><img src="assets/payments/briva.png" alt="" /></li>
+              <li><img src="assets/payments/bniva.png" alt="" /></li>
+              <li><img src="assets/payments/bsiva.png" alt="" /></li>
+              <li><img src="assets/payments/permatava.png" alt="" /></li>
+              <li><img src="assets/payments/cimbva.png" alt="" /></li>
+              <li><img src="assets/payments/danamonva.png" alt="" /></li>
+              <li><img src="assets/payments/alfamart.png" alt="" /></li>
+              <li><img src="assets/payments/indomaret.png" alt="" /></li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
-    <p class="copyright">© <span id="year"></span> Jean Shop. Hak cipta dilindungi.</p>
+    <p class="copyright">© <span id="year"></span> Jean Shop. Hak cipta dilindungi.<span class="credit">Created by <b>ozinvoidwalker</b></span></p>
   </footer>
 
   <a class="help-fab" data-wa href="#" aria-label="Butuh bantuan? Chat WhatsApp">

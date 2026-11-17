@@ -265,9 +265,25 @@ a.ribbon:hover { color: #fde68a; }
 .secure-ico { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: #1a2742; color: var(--primary-2); }
 .secure b { display: block; font-size: 11px; letter-spacing: .5px; text-transform: uppercase; }
 .secure small { display: block; font-size: 9px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: #d0d8e6; }
-.pay-logos { display: flex; gap: 8px; flex-wrap: wrap; }
-.pay-logos .pay { height: 30px; min-width: 72px; }
+/* Logo metode bayar berjalan ke samping. Track berisi 2 daftar yang sama → geser -50% = kembali ke awal tanpa jeda */
+/* contain: inline-size → lebar track (±3000px) tidak ikut menentukan lebar footer (tanpa ini halaman HP bisa digeser ke samping) */
+.pay-marquee { flex: 1; min-width: 0; max-width: 100%; contain: inline-size; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.pay-track { display: flex; width: max-content; animation: pay-scroll 40s linear infinite; }
+.pay-marquee:hover .pay-track { animation-play-state: paused; }
+.pay-set { display: flex; gap: 10px; margin: 0; padding: 0 10px 0 0; list-style: none; }
+.pay-set li { flex: none; display: grid; place-items: center; width: 104px; height: 42px; padding: 7px 12px; border-radius: 8px; background: #fff; box-shadow: 0 2px 8px #0004; }
+.pay-set img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; }
+.pay-set .pay-txt { color: #111; font-size: 16px; font-weight: 900; letter-spacing: 2px; }
+@keyframes pay-scroll { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .pay-marquee { -webkit-mask-image: none; mask-image: none; }
+  .pay-track { width: auto; animation: none; }
+  .pay-set { flex-wrap: wrap; justify-content: center; padding: 0; }
+  .pay-set[aria-hidden="true"] { display: none; }
+}
 .copyright { margin-top: 28px; padding: 18px 16px; border-top: 1px solid var(--line); text-align: center; font-size: 11px; font-weight: 700; color: #d0d8e6; }
+.credit { display: block; margin-top: 6px; font-weight: 600; color: var(--muted); letter-spacing: .3px; }
+.credit b { color: var(--primary-2); font-weight: 800; }
 
 /* ---------- tombol bantuan ---------- */
 .help-fab { position: fixed; right: 16px; bottom: 16px; z-index: 60; display: flex; align-items: center; gap: 8px; padding: 8px 14px 8px 8px; border-radius: 99px; background: var(--grad); box-shadow: 0 10px 28px #0f3f9e77; font-size: 10px; line-height: 1.2; transition: transform .2s; }
@@ -341,8 +357,8 @@ body[data-page="topup"] .help-fab { bottom: 112px; }
   .footer-grid { grid-template-columns: 1fr; }
   .footer-brand { text-align: center; }
   .footer-pay { flex-direction: column; align-items: stretch; }
-  .pay-logos { display: grid; grid-template-columns: 1fr 1fr; }
-  .pay-logos .pay { width: 100%; height: 36px; }
+  .pay-track { animation-duration: 30s; }
+  .pay-set li { width: 92px; height: 38px; }
   .items { grid-template-columns: 1fr 1fr; }
   .pays { grid-template-columns: 1fr 1fr; }
   .summary { bottom: 8px; padding: 12px 14px; }
