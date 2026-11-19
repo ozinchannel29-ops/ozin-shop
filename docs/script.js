@@ -152,6 +152,7 @@
     const p = bySlug(slug);
     if (!p) return pageNotFound();
     const fields = FIELDS[p.fields] || FIELDS.userid;
+    const isPhone = p.fields === "phone"; // produk pulsa: isiannya nomor HP, bukan data akun game
     const order = { item: null, pay: null };
     const auto = !!API;
     // Nominal & metode bayar: dari server (supplier + payment gateway) atau dari data.js (mode WA manual)
@@ -175,7 +176,7 @@
           <div class="panel howto">
             <h4>Cara Top Up</h4>
             <ol>
-              <li>Masukkan data akun ${esc(p.name)} kamu.</li>
+              <li>${isPhone ? "Masukkan nomor HP tujuan pengisian." : `Masukkan data akun ${esc(p.name)} kamu.`}</li>
               <li>Pilih nominal yang diinginkan.</li>
               <li>Pilih metode pembayaran.</li>
               <li>Isi nomor WhatsApp, lalu klik <b>Pesan Sekarang</b>.</li>
@@ -186,7 +187,7 @@
 
         <form class="p-main" id="orderForm" novalidate>
           <div class="panel step">
-            <h3><span class="num">1</span> Masukkan Data Akun</h3>
+            <h3><span class="num">1</span> ${isPhone ? "Masukkan No HP" : "Masukkan Data Akun"}</h3>
             <div class="field-row">
               ${fields.map((f) => `
                 <label class="field ${f.small ? "small" : ""}">
