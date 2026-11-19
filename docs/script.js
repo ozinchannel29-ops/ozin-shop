@@ -247,12 +247,18 @@
       $("#sumTotal").textContent = rupiah(total());
       $("#sumItem").textContent = order.item ? `${order.item.name}${order.pay ? " • " + order.pay.name : ""}` : "Belum memilih nominal";
     };
+    // Nama dari supplier sering diawali nama game ("MOBILE LEGENDS 30 Diamond") → tampilkan "30 Diamond" saja
+    const prefix = new RegExp(`^(${[p.name, p.short].filter(Boolean).map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})\\s+`, "i");
+    const itemName = (n) => String(n).replace(prefix, "") || n;
+    const GEM = `<svg class="item-ico gem" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="gemA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9fbff"/><stop offset=".55" stop-color="#8fe3ff"/><stop offset="1" stop-color="#3fb3f0"/></linearGradient></defs><path fill="url(#gemA)" d="M9 5h14l6 8-13 15L3 13z"/><path fill="#fff" opacity=".55" d="M9 5h14l-3 8h-8zM3 13h9l4 15z"/><path fill="#1f8fd6" opacity=".35" d="M20 13h9L16 28z"/></svg>`;
+    const itemIcon = (n) => /diamond/i.test(n) ? GEM : p.img ? `<img class="item-ico" src="${p.img}" alt="" loading="lazy" />` : GEM;
     const renderItems = () => {
       $("#items").innerHTML = items.length
         ? items.map((it, i) => `
           <button type="button" class="item" data-item="${i}" ${it.available ? "" : "disabled"}>
-            <b>${esc(it.name)}</b>
-            <span>${it.available ? rupiah(it.price) : "Stok habis"}</span>
+            <b class="item-name">${esc(itemName(it.name))}</b>
+            <span class="item-row">${itemIcon(it.name)}<span class="item-price">${it.available ? rupiah(it.price) : "Stok habis"}</span></span>
+            <span class="item-foot"><span class="instan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>INSTAN</span></span>
           </button>`).join("")
         : `<p class="hint">Nominal belum tersedia. Silakan hubungi admin.</p>`;
     };
